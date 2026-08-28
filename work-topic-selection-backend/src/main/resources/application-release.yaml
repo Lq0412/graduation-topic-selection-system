@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:mysql://work-mysql:3306/work_topic_selection
+  redis:
+    host: work-redis
+    database: 0
+server:
+  address: 0.0.0.0
+# knife4j:
+#   enable: false

@@ -1,0 +1,22 @@
+.row-disabled td {
+  text-decoration: line-through;
+  color: #000;
+}
+
+.row-not-started td {
+  background-color: #ffe58f;
+  color: #000;
+}
+
+.row-ending-soon td {
+  background-color: #ffccc7;
+  border-color: #ff7875;
+  color: #000;
+}
+
+.row-ending-soon.row-disabled td {
+  background-color: #ffccc7;
+  border-color: #ff7875;
+  color: #000;
+  text-decoration: line-through;
+}

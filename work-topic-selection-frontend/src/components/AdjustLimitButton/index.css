@@ -1,0 +1,4 @@
+.row-disabled td {
+  text-decoration: line-through;
+  color: gray;
+}

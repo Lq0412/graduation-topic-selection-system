@@ -1,0 +1,134 @@
+# 配置框架(使用 java -jar app.jar --spring.profiles.active=develop | release | production 来启动项目, 其中 release 有时间就拿来测试, 而 production 存储在 Github 上, 每次修改 Github 配置就需要刷新(这个有时间可以优化为无需重启))
+spring:
+  ## 配置环境
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:develop} # 默认启动开发环境
+  ## 配置名称
+  application:
+    name: work-topic-selection
+  ## 配置重载
+  devtools:
+    restart:
+      enabled: false
+  ## 资源限制
+  servlet:
+    multipart:
+      max-file-size: 10MB
+  ## 配置数源
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://127.0.0.1:3306/work_topic_selection}
+    username: ${SPRING_DATASOURCE_USERNAME:wts}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+  ## 配置缓存
+  redis:
+    database: ${SPRING_REDIS_DATABASE:2} # Redis 数据库索引
+    host: ${SPRING_REDIS_HOST:127.0.0.1} # Redis 服务器地址
+    port: ${SPRING_REDIS_PORT:6379} # Redis 服务器连接端口
+    password: ${SPRING_REDIS_PASSWORD:} # Redis 服务器连接密码(默认为空)
+    timeout: 10s # 连接超时时间
+    lettuce:
+      pool: # 链接池配置
+        max-active: 200 # 连接池最大连接数
+        max-wait: -1ms # 连接池最大阻塞等待时间(使用负值表示没有限制)
+        max-idle: 10 # 连接池中的最大空闲连接
+        min-idle: 0 # 连接池中的最小空闲连接
+  ## 配置视图
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  ## 配置会话
+  session:
+    timeout: 2592000
+  ## 配置邮箱
+  mail:
+    host: ${SPRING_MAIL_HOST:smtp.qq.com}
+    port: ${SPRING_MAIL_PORT:587}
+    username: ${SPRING_MAIL_USERNAME:}
+    password: ${SPRING_MAIL_PASSWORD:}
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+  ## 配置日志
+  jackson:
+    time-zone: Asia/Shanghai
+
+# 配置服务
+server:
+  ## 配置地址
+  address: ${SERVER_ADDRESS:127.0.0.1}
+  ## 配置端口
+  port: ${SERVER_PORT:8000}
+  # 仅信任 Tomcat 默认的内网代理范围；通过 Caddy 运行时将 X-Forwarded-For 转成真实 remoteAddr。
+  forward-headers-strategy: native
+  # 配置前缀
+  servlet:
+    context-path: /
+    session:
+      cookie:
+        max-age: 2592000
+
+# 配置日志
+logging:
+  level:
+    # root: DEBUG # 如果需要仔细调试可以打开这个选项
+    cn.com.edtechhub.worktopicselection: INFO # 控制本项目包内的日志输出等级 TRACE | DEBUG | INFO | WARN | ERROR | FATAL
+
+# 配置文档
+knife4j:
+  enable: true
+  openapi:
+    title: "接口文档"
+    version: 1.0
+    group:
+      default:
+        api-rule: package
+        api-rule-resources:
+          - cn.com.edtechhub.worktopicselection.controller
+
+# 配置 MyBatisPlus
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: false
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl # org.apache.ibatis.logging.stdout.StdOutImpl
+#  global-config:
+#    db-config:
+#      logic-delete-field: isDelete # 全局逻辑删除的实体字段名
+#      logic-delete-value: 1 # 逻辑已删除值(默认为 1)
+#      logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+
+# 配置应用
+app:
+  bootstrap-admin:
+    account: ${APP_BOOTSTRAP_ADMIN_ACCOUNT:}
+    name: ${APP_BOOTSTRAP_ADMIN_NAME:}
+    password: ${APP_BOOTSTRAP_ADMIN_PASSWORD:}
+  cors:
+    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://127.0.0.1:3000,http://localhost:3000}
+  websocket:
+    allowed-origins: ${APP_WEBSOCKET_ALLOWED_ORIGINS:http://127.0.0.1:3000,http://localhost:3000}
+
+# 配置 Sa-Token
+sa-token: # 默认开启 Redis 配置将自动支持 Sa-token 使用 Redis 存储认证相关键值对, 想要关掉需要去除相关依赖
+  ## token 名称
+  token-name: work-topic-selection # 同时也是 cookie 名称
+  ## token 有效期
+  timeout: 604800 # 2592000 # 单位为秒, 默认 30 天, -1 代表永久有效, 这里设为 7 天
+  ## token 最低活跃频率
+  active-timeout: -1 # 单位:为秒, 如果 token 超过此时间没有访问系统就会被冻结, 默认 -1 代表不限制, 永不冻结
+  ## token 共享
+  is-share: true # 在多人登录同一账号时, 是否共用一个 token(为 true 时所有登录共用一个 token, 为 false 时每次登录新建一个 token)
+  ## 是否允许同一账号多地同时登录
+  is-concurrent: false # 为 true 时允许一起登录, 为 false 时新登录挤掉旧登录
+  ## token 风格
+  token-style: uuid # 默认可取值: uuid、simple-uuid、random-32、random-64、random-128、tik
+  ## 是否输出操作日志
+  is-log: true
+
+# 配置 AI
+ai:
+  txy-bot-app-key: ${TXY_BOT_APP_KEY:}

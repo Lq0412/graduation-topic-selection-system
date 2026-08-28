@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <!-- 元数描述 -->
+    <modelVersion>4.0.0</modelVersion>
+    <packaging>jar</packaging>
+    <name>work-topic-selection</name>
+    <description>Graduation topic selection system</description>
+    <url>https://github.com/Lq0412/graduation-topic-selection-system</url>
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <!-- 标识描述 -->
+    <groupId>com.Lzh</groupId>
+    <artifactId>work-topic-selection</artifactId>
+    <version>1.0.0</version>
+
+    <!-- 版本描述 -->
+    <properties>
+        <java.version>1.8</java.version>
+    </properties>
+
+    <!-- 继承描述 -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.5.6</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+    <!-- 依赖描述 -->
+    <dependencies>
+
+        <!-- Spring: https://spring.io/ -->
+        <dependency>
+            <!-- Spring Boot 核心依赖 -->
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-freemarker</artifactId>
+        </dependency>
+        <dependency>
+            <!-- 引入 Spring Boot 的 Web 相关依赖, 支持 RESTful API 开发, 包含: Spring MVC(用于处理 HTTP 请求)、Jackson(用于 JSON 序列化)、Tomcat(默认内嵌的 Web 服务器) -->
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <!-- 用于处理 @ConfigurationProperties 注解(改注解可以读取 application 的内容)的元数据生成, 方便 IDE 提示 -->
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <!-- 提供 Spring AOP 面向切面编程功能, 用于实现日志或权限控制等横切逻辑 -->
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+        <dependency>
+            <!-- Spring Boot 监控组件, 主要用来给 IDEA 作为 Bean 检测所使用的 -->
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <!-- 提供开发时的工具，比如热加载、自动重启等, 提高开发效率 -->
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <!-- Hibernate Validator 参数校验模块 -->
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <!-- 仅使用 BCrypt 密码散列，不引入完整的 Spring Security 认证链 -->
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-crypto</artifactId>
+        </dependency>
+        <dependency>
+            <!-- 提供比较原生的 WebSocket 支持 -->
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+        <dependency>
+            <!-- 为 Sprng boot 提供单元测试功能 -->
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- H2 -->
+        <dependency>
+            <!-- 嵌入式数据库，方便在内存中测试数据库相关的代码 -->
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- MySQL: https://www.mysql.com/ -->
+        <dependency>
+            <!-- 对 JDBC 接口的具体实现-->
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Redis: https://redis.io/ -->
+        <dependency>
+            <!-- 提供简单的 Lettuce 客户端 -->
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <dependency>
+            <!-- 提供 Redis 连接池 -->
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+        </dependency>
+
+        <!-- Caffeine: https://github.com/ben-manes/caffeine -->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>2.9.0</version>
+        </dependency>
+
+        <!-- Lombok: https://projectlombok.org/ -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Hutool: https://doc.hutool.cn/pages/index/ -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.8.8</version>
+        </dependency>
+
+        <!-- Commons Lang3: https://commons.apache.org/proper/commons-lang/ -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+
+        <!-- OpenAPI: https://doc.xiaominfo.com/ -->
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-openapi2-spring-boot-starter</artifactId>
+            <version>4.4.0</version>
+        </dependency>
+
+        <!-- MyBatis Plus: https://baomidou.com/ -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>3.5.2</version>
+        </dependency>
+
+        <!-- Sa-Token: https://sa-token.cc/doc.html#/ -->
+        <dependency>
+            <!-- Sa-Token 整合依赖 -->
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-spring-boot-starter</artifactId>
+            <version>1.42.0</version>
+        </dependency>
+        <dependency>
+            <!-- Sa-Token 整合 Redis -->
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-redis-template</artifactId>
+            <version>1.42.0</version>
+        </dependency>
+        <dependency>
+            <!-- Sa-Token 整合 Redis 时使用 jackson 序列化方式 -->
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-redis-jackson</artifactId>
+            <version>1.42.0</version>
+        </dependency>
+
+        <!-- Office -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+            <version>3.1.1</version>
+        </dependency>
+
+        <!-- CSV -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>1.10.0</version>
+        </dependency>
+
+        <!-- Mail -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
+        <!-- Sentinel -->
+        <dependency>
+            <groupId>com.alibaba.csp</groupId>
+            <artifactId>sentinel-core</artifactId>
+            <version>1.8.6</version>
+        </dependency>
+
+    </dependencies>
+
+    <!-- 插件描述 -->
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>2022届*.csv</exclude>
+                    <exclude>2022届*.xlsx</exclude>
+                    <exclude>sql/init.sql</exclude>
+                    <exclude>sql/test.sql</exclude>
+                </excludes>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <excludes>
+                    <exclude>sql/init.sql</exclude>
+                </excludes>
+            </testResource>
+        </testResources>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <includeSystemScope>true</includeSystemScope> <!-- 将作用域为 system 的依赖也包含在打包中 -->
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

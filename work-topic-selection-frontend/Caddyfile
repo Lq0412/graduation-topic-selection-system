@@ -1,0 +1,20 @@
+:3000 {
+  # 生产环境同源 API 与 WebSocket 反向代理。可用 BACKEND_UPSTREAM 覆盖上游地址。
+  handle_path /work_topic_selection_api/* {
+    reverse_proxy {$BACKEND_UPSTREAM:host.docker.internal:8000}
+  }
+
+  # 前端服务
+  handle {
+    root * ./dist
+    file_server
+    try_files {path} /index.html
+  }
+
+  # 日志服务
+  log {
+    level INFO
+    output file ./log/access.log
+    format json
+  }
+}

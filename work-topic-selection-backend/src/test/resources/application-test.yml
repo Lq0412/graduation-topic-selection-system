@@ -1,0 +1,27 @@
+spring:
+  # 1. 明确指定配置环境名称（可选，但规范）
+  profiles:
+    active: test
+  # 2. 数据源配置（核心，已兼容 MySQL）
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:test_db;MODE=MYSQL;DATABASE_TO_LOWER=TRUE;CHARSET=UTF8;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ''
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:sql/schema-h2.sql
+      data-locations: classpath:sql/data-h2.sql
+  # 3. H2 控制台配置（测试环境开启，方便调试）
+  h2:
+    console:
+      enabled: true
+      path: /h2-console  # 补充控制台访问路径（默认就是这个，显式写更清晰）
+      settings:
+        web-allow-others: false  # 禁止外部访问（测试环境也别开放，仅本机用）
+# 4. MyBatis-Plus 配置需要位于根节点，和生产环境保持一致
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

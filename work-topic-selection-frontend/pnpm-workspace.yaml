@@ -1,0 +1,8 @@
+allowBuilds:
+  core-js: false
+  core-js-pure: false
+  es5-ext: false
+  esbuild: true
+  puppeteer-core: false
+overrides:
+  '@ant-design/pro-layout>path-to-regexp': 8.4.0
