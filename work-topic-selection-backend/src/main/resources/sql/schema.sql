@@ -1,6 +1,8 @@
 -- Public, non-destructive MySQL 8 schema.
 -- Create the work_topic_selection database and database user separately.
 
+SET NAMES utf8mb4;
+
 CREATE TABLE IF NOT EXISTS `user`
 (
     `id`           BIGINT       NOT NULL AUTO_INCREMENT COMMENT 'id',

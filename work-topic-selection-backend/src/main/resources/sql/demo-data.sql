@@ -1,5 +1,7 @@
 -- Entirely fictional demonstration data. No real accounts or credentials are included.
 
+SET NAMES utf8mb4;
+
 INSERT INTO `dept` (`deptName`)
 SELECT '示例工程学院'
 WHERE NOT EXISTS (SELECT 1 FROM `dept` WHERE `deptName` = '示例工程学院');
