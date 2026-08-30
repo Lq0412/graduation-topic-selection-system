@@ -44,6 +44,11 @@ public class AddTopicRequest implements Serializable {
     private String deptTeacher;
 
     /**
+     * 题目适用的选题组；为空时兼容历史题目。
+     */
+    private String topicGroup;
+
+    /**
      * 指导老师
      */
     private String teacherName;

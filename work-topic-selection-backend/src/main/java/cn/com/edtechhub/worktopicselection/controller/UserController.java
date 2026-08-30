@@ -18,6 +18,7 @@ import cn.com.edtechhub.worktopicselection.model.dto.dept.SetDeptConfigRequest;
 import cn.com.edtechhub.worktopicselection.model.dto.project.DeleteProjectRequest;
 import cn.com.edtechhub.worktopicselection.model.dto.project.ProjectAddRequest;
 import cn.com.edtechhub.worktopicselection.model.dto.project.ProjectQueryRequest;
+import cn.com.edtechhub.worktopicselection.model.dto.project.ProjectGroupUpdateRequest;
 import cn.com.edtechhub.worktopicselection.model.dto.schedule.SetTimeRequest;
 import cn.com.edtechhub.worktopicselection.model.dto.schedule.UnSetTimeRequest;
 import cn.com.edtechhub.worktopicselection.model.dto.studentTopicSelection.SelectStudentRequest;
@@ -1248,10 +1249,43 @@ public class UserController {
             Project newProject = new Project();
             newProject.setProjectName(projectName);
             newProject.setDeptName(deptName);
+            newProject.setGroupName(StringUtils.trimToNull(request.getGroupName()));
             boolean result = projectService.save(newProject);
             ThrowUtils.throwIf(!result, CodeBindMessageEnums.OPERATION_ERROR, "无法添加新的专业");
             return TheResult.success(CodeBindMessageEnums.SUCCESS, newProject.getId());
         });
+    }
+
+    /**
+     * 配置专业所属选题组。
+     *
+     * <p>一个专业只保存一个选题组；再次提交同一专业时覆盖原配置，
+     * 传空组名则取消分组，便于管理员在正式开放前调整配置。</p>
+     */
+    @SaCheckLogin
+    @SaCheckRole(value = {"admin"}, mode = SaMode.OR)
+    @PostMapping("/update/project/group")
+    public BaseResponse<Boolean> updateProjectGroup(@RequestBody ProjectGroupUpdateRequest request) throws BlockException {
+        // 流量控制
+        String entryName = new Object() {
+        }.getClass().getEnclosingMethod().getName();
+        sentineManager.initFlowRules(entryName);
+        try (com.alibaba.csp.sentinel.Entry ignored = SphU.entry(entryName)) {
+        }
+
+        // 参数检查
+        ThrowUtils.throwIf(request == null, CodeBindMessageEnums.PARAMS_ERROR, "请求体不能为空");
+        assert request != null;
+        String projectName = StringUtils.trimToNull(request.getProjectName());
+        ThrowUtils.throwIf(projectName == null, CodeBindMessageEnums.PARAMS_ERROR, "专业名称不能为空");
+
+        Project project = projectService.getOne(new QueryWrapper<Project>().eq("projectName", projectName));
+        ThrowUtils.throwIf(project == null, CodeBindMessageEnums.NOT_FOUND_ERROR, "专业不存在");
+
+        project.setGroupName(StringUtils.trimToNull(request.getGroupName()));
+        boolean updated = projectService.updateById(project);
+        ThrowUtils.throwIf(!updated, CodeBindMessageEnums.OPERATION_ERROR, "无法保存专业选题组");
+        return TheResult.success(CodeBindMessageEnums.SUCCESS, true);
     }
 
     /**
@@ -1551,6 +1585,7 @@ public class UserController {
             topic.setTeacherAccount(loginUser.getUserAccount());
             topic.setDeptName(teacherDept);
             topic.setDeptTeacher(director.getUserName());
+            topic.setTopicGroup(StringUtils.trimToNull(request.getTopicGroup()));
             topic.setSurplusQuantity(topicCapacity);
             boolean result = topicService.save(topic);
             ThrowUtils.throwIf(!result, CodeBindMessageEnums.OPERATION_ERROR, "无法添加新的选题");
@@ -1905,6 +1940,7 @@ public class UserController {
                     .orElse(null);
 
             if (studentTopicSelectionStatusEnum == StudentTopicSelectionStatusEnum.EN_PRESELECT) {
+                validateStudentTopicGroup(lockedStudent, topic);
                 boolean crossSelectionEnabled = switchService.isEnabled(TopicConstant.CROSS_TOPIC_SWITCH);
                 ThrowUtils.throwIf(
                         !crossSelectionEnabled && !Objects.equals(lockedStudent.getDept(), topic.getDeptName()),
@@ -1994,6 +2030,7 @@ public class UserController {
 
         Topic topic = topicMapper.selectByIdForUpdate(topicId);
         ThrowUtils.throwIf(topic == null, CodeBindMessageEnums.NOT_FOUND_ERROR, "该题目不存在");
+        validateStudentTopicGroup(lockedStudent, topic);
         ThrowUtils.throwIf(
                 !Objects.equals(topic.getStatus(), TopicStatusEnum.PUBLISHED.getCode()),
                 CodeBindMessageEnums.ILLEGAL_OPERATION_ERROR,
@@ -2107,6 +2144,7 @@ public class UserController {
             topic.setType(type);
             topic.setDescription(description);
             topic.setRequirement(requirement);
+            topic.setTopicGroup(StringUtils.trimToNull(request.getTopicGroup()));
             topic.setStatus(TopicStatusEnum.PENDING_REVIEW.getCode());
             topic.setReason("");
             boolean result = topicService.updateById(topic);
@@ -2169,6 +2207,7 @@ public class UserController {
 
         Topic topic = topicMapper.selectByIdForUpdate(topicId);
         ThrowUtils.throwIf(topic == null, CodeBindMessageEnums.NOT_FOUND_ERROR, "未找到对应的课题");
+        validateStudentTopicGroup(lockedStudent, topic);
         ThrowUtils.throwIf(!isTopicOwner(loginTeacher, topic), CodeBindMessageEnums.NO_AUTH_ERROR, "只能为自己的题目选择学生");
         ThrowUtils.throwIf(
                 !Objects.equals(topic.getStatus(), TopicStatusEnum.PUBLISHED.getCode()),
@@ -3442,6 +3481,26 @@ public class UserController {
         int exp = (int) (Math.log(size) / Math.log(1024));
         char unit = "KMGTPE".charAt(exp - 1);
         return String.format("%.1f %sB", size / Math.pow(1024, exp), unit);
+    }
+
+    /**
+     * 校验学生专业与题目适用选题组是否一致。
+     *
+     * <p>历史题目没有设置适用组时继续按原有规则处理；新题目设置了适用组后，
+     * 学生必须存在专业且该专业已配置到同一个选题组。校验放在后端，避免绕过前端直接调用接口。</p>
+     */
+    void validateStudentTopicGroup(User student, Topic topic) {
+        if (StringUtils.isBlank(topic.getTopicGroup())) {
+            return;
+        }
+        ThrowUtils.throwIf(StringUtils.isBlank(student.getProject()), CodeBindMessageEnums.ILLEGAL_OPERATION_ERROR, "当前学生未配置专业，无法选择分组题目");
+        Project project = projectService.getOne(new QueryWrapper<Project>().eq("projectName", student.getProject()));
+        ThrowUtils.throwIf(project == null || StringUtils.isBlank(project.getGroupName()), CodeBindMessageEnums.ILLEGAL_OPERATION_ERROR, "当前专业未配置选题组，无法选择该题目");
+        ThrowUtils.throwIf(
+                !Objects.equals(StringUtils.trimToNull(project.getGroupName()), StringUtils.trimToNull(topic.getTopicGroup())),
+                CodeBindMessageEnums.ILLEGAL_OPERATION_ERROR,
+                "当前专业不属于该题目适用的选题组"
+        );
     }
 
     /**

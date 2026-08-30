@@ -35,7 +35,8 @@ CREATE TABLE IF NOT EXISTS `project`
     `createTime`  DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     `updateTime`  DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     `isDelete`    TINYINT  DEFAULT 0 NOT NULL,
-    `deptName`    VARCHAR(256)
+    `deptName`    VARCHAR(256),
+    `groupName`   VARCHAR(256)
 );
 
 CREATE TABLE IF NOT EXISTS `topic`
@@ -49,6 +50,7 @@ CREATE TABLE IF NOT EXISTS `topic`
     `teacherAccount`  VARCHAR(256),
     `deptName`        VARCHAR(256),
     `deptTeacher`     VARCHAR(256),
+    `topicGroup`     VARCHAR(256),
     `createTime`      DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     `updateTime`      DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     `isDelete`        TINYINT  DEFAULT 0 NOT NULL,

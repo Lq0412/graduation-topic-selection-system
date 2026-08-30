@@ -56,6 +56,21 @@ export async function addProjectUsingPost(
   });
 }
 
+/** updateProjectGroup POST /user/update/project/group */
+export async function updateProjectGroupUsingPost(
+  body: API.ProjectGroupUpdateRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseBoolean_>('/user/update/project/group', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
 /** addTopic POST /user/add/topic */
 export async function addTopicUsingPost(
   body: API.AddTopicRequest,

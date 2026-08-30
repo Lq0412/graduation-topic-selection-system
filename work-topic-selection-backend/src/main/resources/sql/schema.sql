@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS `project`
     `updateTime`  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
     `isDelete`    TINYINT      NOT NULL DEFAULT 0 COMMENT '是否删除',
     `deptName`    VARCHAR(256)          DEFAULT NULL COMMENT '系部名',
+    `groupName`   VARCHAR(256)          DEFAULT NULL COMMENT '选题组',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
@@ -65,6 +66,7 @@ CREATE TABLE IF NOT EXISTS `topic`
     `teacherAccount`  VARCHAR(256)           DEFAULT NULL COMMENT '指导老师账号（归属校验）',
     `deptName`        VARCHAR(256)           DEFAULT NULL COMMENT '系部名',
     `deptTeacher`     VARCHAR(256)           DEFAULT NULL COMMENT '系部主任',
+    `topicGroup`     VARCHAR(256)           DEFAULT NULL COMMENT '适用选题组',
     `createTime`      DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `updateTime`      DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
     `isDelete`        TINYINT       NOT NULL DEFAULT 0 COMMENT '是否删除',

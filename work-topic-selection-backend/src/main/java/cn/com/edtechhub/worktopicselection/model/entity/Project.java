@@ -41,9 +41,14 @@ public class Project implements Serializable {
     private Integer isDelete;
 
     /**
-     * 
+     * 所属系部
      */
     private String deptName;
+
+    /**
+     * 专业所属选题组，用于限制学生只能选择本专业组选题。
+     */
+    private String groupName;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
@@ -65,7 +70,8 @@ public class Project implements Serializable {
             && (this.getCreateTime() == null ? other.getCreateTime() == null : this.getCreateTime().equals(other.getCreateTime()))
             && (this.getUpdateTime() == null ? other.getUpdateTime() == null : this.getUpdateTime().equals(other.getUpdateTime()))
             && (this.getIsDelete() == null ? other.getIsDelete() == null : this.getIsDelete().equals(other.getIsDelete()))
-            && (this.getDeptName() == null ? other.getDeptName() == null : this.getDeptName().equals(other.getDeptName()));
+            && (this.getDeptName() == null ? other.getDeptName() == null : this.getDeptName().equals(other.getDeptName()))
+            && (this.getGroupName() == null ? other.getGroupName() == null : this.getGroupName().equals(other.getGroupName()));
     }
 
     @Override
@@ -78,6 +84,7 @@ public class Project implements Serializable {
         result = prime * result + ((getUpdateTime() == null) ? 0 : getUpdateTime().hashCode());
         result = prime * result + ((getIsDelete() == null) ? 0 : getIsDelete().hashCode());
         result = prime * result + ((getDeptName() == null) ? 0 : getDeptName().hashCode());
+        result = prime * result + ((getGroupName() == null) ? 0 : getGroupName().hashCode());
         return result;
     }
 
@@ -93,6 +100,7 @@ public class Project implements Serializable {
         sb.append(", updateTime=").append(updateTime);
         sb.append(", isDelete=").append(isDelete);
         sb.append(", deptName=").append(deptName);
+        sb.append(", groupName=").append(groupName);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

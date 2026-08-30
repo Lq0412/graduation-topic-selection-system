@@ -63,6 +63,11 @@ public class Topic implements Serializable {
     private String deptTeacher;
 
     /**
+     * 题目适用的选题组；为空时兼容历史未分组题目。
+     */
+    private String topicGroup;
+
+    /**
      * 创建时间
      */
     private Date createTime;
@@ -132,6 +137,7 @@ public class Topic implements Serializable {
             && (this.getTeacherAccount() == null ? other.getTeacherAccount() == null : this.getTeacherAccount().equals(other.getTeacherAccount()))
             && (this.getDeptName() == null ? other.getDeptName() == null : this.getDeptName().equals(other.getDeptName()))
             && (this.getDeptTeacher() == null ? other.getDeptTeacher() == null : this.getDeptTeacher().equals(other.getDeptTeacher()))
+            && (this.getTopicGroup() == null ? other.getTopicGroup() == null : this.getTopicGroup().equals(other.getTopicGroup()))
             && (this.getCreateTime() == null ? other.getCreateTime() == null : this.getCreateTime().equals(other.getCreateTime()))
             && (this.getUpdateTime() == null ? other.getUpdateTime() == null : this.getUpdateTime().equals(other.getUpdateTime()))
             && (this.getIsDelete() == null ? other.getIsDelete() == null : this.getIsDelete().equals(other.getIsDelete()))
@@ -156,6 +162,7 @@ public class Topic implements Serializable {
         result = prime * result + ((getTeacherAccount() == null) ? 0 : getTeacherAccount().hashCode());
         result = prime * result + ((getDeptName() == null) ? 0 : getDeptName().hashCode());
         result = prime * result + ((getDeptTeacher() == null) ? 0 : getDeptTeacher().hashCode());
+        result = prime * result + ((getTopicGroup() == null) ? 0 : getTopicGroup().hashCode());
         result = prime * result + ((getCreateTime() == null) ? 0 : getCreateTime().hashCode());
         result = prime * result + ((getUpdateTime() == null) ? 0 : getUpdateTime().hashCode());
         result = prime * result + ((getIsDelete() == null) ? 0 : getIsDelete().hashCode());
@@ -182,6 +189,7 @@ public class Topic implements Serializable {
         sb.append(", teacherName=").append(teacherName);
         sb.append(", deptName=").append(deptName);
         sb.append(", deptTeacher=").append(deptTeacher);
+        sb.append(", topicGroup=").append(topicGroup);
         sb.append(", createTime=").append(createTime);
         sb.append(", updateTime=").append(updateTime);
         sb.append(", isDelete=").append(isDelete);

@@ -11,6 +11,7 @@ declare namespace API {
     description?: string;
     requirement?: string;
     teacherName?: string;
+    topicGroup?: string;
     topic?: string;
     type?: string;
   };
@@ -382,6 +383,7 @@ declare namespace API {
   type Project = {
     createTime?: string;
     deptName?: string;
+    groupName?: string;
     id?: number;
     isDelete?: number;
     projectName?: string;
@@ -390,6 +392,12 @@ declare namespace API {
 
   type ProjectAddRequest = {
     deptName?: string;
+    groupName?: string;
+    projectName?: string;
+  };
+
+  type ProjectGroupUpdateRequest = {
+    groupName?: string;
     projectName?: string;
   };
 
@@ -495,6 +503,7 @@ declare namespace API {
 
   type Topic = {
     createTime?: string;
+    topicGroup?: string;
     deptName?: string;
     deptTeacher?: string;
     description?: string;
@@ -553,6 +562,7 @@ declare namespace API {
   type UpdateTopicRequest = {
     description?: string;
     requirement?: string;
+    topicGroup?: string;
     topicName?: string;
     type?: string;
   };

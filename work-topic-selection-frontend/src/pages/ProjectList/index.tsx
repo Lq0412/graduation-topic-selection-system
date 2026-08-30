@@ -3,6 +3,7 @@ import {
   deleteProjectUsingPost,
   getDeptListUsingPost,
   getProjectUsingPost,
+  updateProjectGroupUsingPost,
 } from '@/services/work-topic-selection/userController';
 import { PlusOutlined } from '@ant-design/icons';
 import {
@@ -20,10 +21,16 @@ type GithubIssueItem = {
   id: number;
   projectName: string;
   deptName: string;
+  groupName?: string;
 };
 
 export default () => {
   const actionRef = useRef<ActionType>();
+  const groupOptions = [
+    {label: '第一组', value: '第一组'},
+    {label: '第二组', value: '第二组'},
+    {label: '第三组', value: '第三组'},
+  ];
 
   const columns: ProColumns<GithubIssueItem>[] = [
     {
@@ -41,10 +48,43 @@ export default () => {
       dataIndex: 'projectName',
     },
     {
+      title: '选题组',
+      dataIndex: 'groupName',
+      render: (_, record) => record.groupName || '未配置',
+    },
+    {
       title: '操作',
       valueType: 'option',
       key: 'option',
       render: (text, record, _, action) => [
+        <ModalForm
+          key="group"
+          title={`配置 ${record.projectName} 的选题组`}
+          trigger={<a>配置选题组</a>}
+          initialValues={{groupName: record.groupName}}
+          modalProps={{destroyOnClose: true}}
+          onFinish={async (values) => {
+            const res = await updateProjectGroupUsingPost({
+              projectName: record.projectName,
+              groupName: values.groupName,
+            });
+            if (res.code === 0) {
+              message.success('选题组配置成功');
+              action?.reload?.();
+              return true;
+            }
+            message.error(res.message);
+            return false;
+          }}
+        >
+          <ProFormSelect
+            name="groupName"
+            label="选题组"
+            options={groupOptions}
+            placeholder="请选择选题组"
+            allowClear
+          />
+        </ModalForm>,
         <Popconfirm
           key="delete"
           title="确定要删除该系部专业吗？"
@@ -121,6 +161,7 @@ export default () => {
         <ModalForm<{
           projectName: string;
           deptName: string;
+          groupName?: string;
         }>
           title="添加系部专业"
           trigger={
@@ -165,6 +206,13 @@ export default () => {
             name="deptName"
             label="系部"
             required
+          />
+          <ProFormSelect
+            width="md"
+            name="groupName"
+            label="选题组（可后续配置）"
+            options={groupOptions}
+            allowClear
           />
         </ModalForm>,
       ]}

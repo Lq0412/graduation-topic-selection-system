@@ -27,6 +27,7 @@ type GithubIssueItem = {
   teacherName?: string;
   topic?: string;
   type?: string;
+  topicGroup?: string;
   surplusQuantity?: number;
   status?: number;
   reason?: string;
@@ -279,6 +280,7 @@ export default () => {
             type: record.type,
             description: record.description,
             requirement: record.requirement,
+            topicGroup: record.topicGroup,
           });
           if (res.code === 0) {
             message.success(res.message);
@@ -337,6 +339,7 @@ export default () => {
             teacherName: string;
             deptName: string;
             deptTeacher: string;
+            topicGroup?: string;
           }>
             title="添加题目"
             trigger={
@@ -451,6 +454,17 @@ export default () => {
               name="deptTeacher"
               label="系部主任"
               required
+            />
+            <ProFormSelect
+              width="md"
+              name="topicGroup"
+              label="适用选题组（可选）"
+              options={[
+                {label: '第一组', value: '第一组'},
+                {label: '第二组', value: '第二组'},
+                {label: '第三组', value: '第三组'},
+              ]}
+              allowClear
             />
           </ModalForm>
         </>,

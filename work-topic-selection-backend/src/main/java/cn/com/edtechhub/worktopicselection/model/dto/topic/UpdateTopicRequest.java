@@ -37,6 +37,11 @@ public class UpdateTopicRequest implements Serializable {
      */
     private String requirement;
 
+    /**
+     * 题目适用的选题组；为空时兼容历史题目。
+     */
+    private String topicGroup;
+
     /// 序列化字段 ///
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

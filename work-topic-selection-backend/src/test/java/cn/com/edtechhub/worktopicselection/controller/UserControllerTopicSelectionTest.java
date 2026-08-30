@@ -5,6 +5,7 @@ import cn.com.edtechhub.worktopicselection.exception.BusinessException;
 import cn.com.edtechhub.worktopicselection.mapper.StudentTopicSelectionMapper;
 import cn.com.edtechhub.worktopicselection.mapper.TopicMapper;
 import cn.com.edtechhub.worktopicselection.mapper.UserMapper;
+import cn.com.edtechhub.worktopicselection.model.entity.Project;
 import cn.com.edtechhub.worktopicselection.model.entity.StudentTopicSelection;
 import cn.com.edtechhub.worktopicselection.model.entity.Topic;
 import cn.com.edtechhub.worktopicselection.model.entity.User;
@@ -12,6 +13,8 @@ import cn.com.edtechhub.worktopicselection.model.enums.StudentTopicSelectionStat
 import cn.com.edtechhub.worktopicselection.model.enums.TopicStatusEnum;
 import cn.com.edtechhub.worktopicselection.model.enums.UserRoleEnum;
 import cn.com.edtechhub.worktopicselection.response.BaseResponse;
+import cn.com.edtechhub.worktopicselection.manager.sentine.SentineManager;
+import cn.com.edtechhub.worktopicselection.service.ProjectService;
 import cn.com.edtechhub.worktopicselection.service.StudentTopicSelectionService;
 import cn.com.edtechhub.worktopicselection.service.SwitchService;
 import cn.com.edtechhub.worktopicselection.service.TopicService;
@@ -23,11 +26,14 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -56,6 +62,9 @@ class UserControllerTopicSelectionTest {
     private UserService userService;
 
     @Mock
+    private ProjectService projectService;
+
+    @Mock
     private TopicService topicService;
 
     @Mock
@@ -64,15 +73,93 @@ class UserControllerTopicSelectionTest {
     @Mock
     private SwitchService switchService;
 
+    @Mock
+    private SentineManager sentineManager;
+
+    @Mock
+    private TransactionTemplate transactionTemplate;
+
     @BeforeEach
     void setUp() {
         ReflectionTestUtils.setField(controller, "userMapper", userMapper);
         ReflectionTestUtils.setField(controller, "topicMapper", topicMapper);
         ReflectionTestUtils.setField(controller, "studentTopicSelectionMapper", selectionMapper);
         ReflectionTestUtils.setField(controller, "userService", userService);
+        ReflectionTestUtils.setField(controller, "projectService", projectService);
         ReflectionTestUtils.setField(controller, "topicService", topicService);
         ReflectionTestUtils.setField(controller, "studentTopicSelectionService", selectionService);
         ReflectionTestUtils.setField(controller, "switchService", switchService);
+        ReflectionTestUtils.setField(controller, "sentineManager", sentineManager);
+        ReflectionTestUtils.setField(controller, "transactionTemplate", transactionTemplate);
+    }
+
+    @Test
+    void studentCanSelectTopicFromTheSameConfiguredGroup() {
+        User student = user(1L, "student-1", "学生甲", "计算机系", UserRoleEnum.STUDENT);
+        student.setProject("计算机科学与技术");
+        Topic topic = publishedTopic(10L, 1);
+        topic.setTopicGroup("第一组");
+        Project project = new Project();
+        project.setProjectName(student.getProject());
+        project.setGroupName("第一组");
+
+        when(projectService.getOne(any())).thenReturn(project);
+
+        assertDoesNotThrow(() -> controller.validateStudentTopicGroup(student, topic));
+    }
+
+    @Test
+    void preselectionRejectsTopicFromAnotherConfiguredGroup() {
+        User student = user(1L, "student-1", "学生甲", "计算机系", UserRoleEnum.STUDENT);
+        student.setProject("计算机科学与技术");
+        Topic topic = publishedTopic(10L, 1);
+        topic.setTopicGroup("第二组");
+        Project project = new Project();
+        project.setProjectName(student.getProject());
+        project.setGroupName("第一组");
+
+        when(userService.userGetCurrentLoginUser()).thenReturn(student);
+        when(transactionTemplate.execute(any(TransactionCallback.class))).thenAnswer(invocation ->
+                ((TransactionCallback<?>) invocation.getArgument(0)).doInTransaction(null));
+        when(userMapper.selectByIdForUpdate(student.getId())).thenReturn(student);
+        when(userService.userIsStudent(student)).thenReturn(true);
+        when(topicMapper.selectByIdForUpdate(topic.getId())).thenReturn(topic);
+        when(projectService.getOne(any())).thenReturn(project);
+
+        cn.com.edtechhub.worktopicselection.model.dto.studentTopicSelection.SelectTopicByIdRequest request =
+                new cn.com.edtechhub.worktopicselection.model.dto.studentTopicSelection.SelectTopicByIdRequest();
+        request.setId(topic.getId());
+        request.setStatus(StudentTopicSelectionStatusEnum.EN_PRESELECT.getCode());
+
+        assertThrows(BusinessException.class, () -> controller.preSelectTopicById(request));
+        verify(selectionService, never()).save(any(StudentTopicSelection.class));
+    }
+
+    @Test
+    void finalSelectionRejectsTopicFromAnotherConfiguredGroup() {
+        User student = user(1L, "student-1", "学生甲", "计算机系", UserRoleEnum.STUDENT);
+        student.setProject("计算机科学与技术");
+        Topic topic = publishedTopic(10L, 1);
+        topic.setTopicGroup("第二组");
+        Project project = new Project();
+        project.setProjectName(student.getProject());
+        project.setGroupName("第一组");
+
+        when(userService.userGetCurrentLoginUser()).thenReturn(student);
+        when(transactionTemplate.execute(any(TransactionCallback.class))).thenAnswer(invocation ->
+                ((TransactionCallback<?>) invocation.getArgument(0)).doInTransaction(null));
+        when(userMapper.selectByIdForUpdate(student.getId())).thenReturn(student);
+        when(userService.userIsStudent(student)).thenReturn(true);
+        when(topicMapper.selectByIdForUpdate(topic.getId())).thenReturn(topic);
+        when(projectService.getOne(any())).thenReturn(project);
+
+        cn.com.edtechhub.worktopicselection.model.dto.studentTopicSelection.SelectTopicByIdRequest request =
+                new cn.com.edtechhub.worktopicselection.model.dto.studentTopicSelection.SelectTopicByIdRequest();
+        request.setId(topic.getId());
+        request.setStatus(StudentTopicSelectionStatusEnum.EN_SELECT.getCode());
+
+        assertThrows(BusinessException.class, () -> controller.selectTopicById(request));
+        verify(selectionService, never()).updateById(any(StudentTopicSelection.class));
     }
 
     @Test
