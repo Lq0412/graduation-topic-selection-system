@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "packageManager": "pnpm@11.19.0",
-  "description": "Frontend for the graduation topic selection system",
+  "description": "React frontend for the university graduation topic selection system",
   "scripts": {
     "dev": "export PORT=3000 && export HOST=127.0.0.1 && pnpm start:dev",
     "analyze": "cross-env ANALYZE=1 max build",
