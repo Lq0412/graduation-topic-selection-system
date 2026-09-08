@@ -131,7 +131,8 @@ flowchart TB
 │   ├── src/main/java/                   # 控制器、服务、权限和基础设施
 │   ├── src/main/resources/sql/          # 建库脚本、示例数据和历史迁移
 │   └── src/test/                        # 单元测试和 H2 测试资源
-├── deploy/migrations/                   # 面向已存在数据库的部署迁移
+├── deploy/                              # 生产 Docker Compose 部署套件、备份脚本与说明
+│   └── migrations/                      # 面向已存在数据库的部署迁移
 ├── .env.example                         # 本地环境变量模板
 ├── build.sh                             # 构建前后端 Docker 镜像
 ├── env.sh                               # 将根目录 .env 导出到当前 Shell
@@ -360,6 +361,8 @@ pnpm lint
 4. 构建 `graduation-topic-selection-frontend:local`。
 
 该脚本只负责构建两个本地镜像，不会自动创建 MySQL、Redis、容器网络或推送镜像仓库。容器部署时请将 `SERVER_ADDRESS` 设置为 `0.0.0.0`，并根据实际网络为后端提供数据库、Redis 和必要的环境变量；前端 Caddy 可通过 `BACKEND_UPSTREAM` 覆盖后端上游地址。
+
+公网生产部署（HTTPS、数据库/Redis 编排、备份与首次初始化步骤）见 [deploy/README.md](./deploy/README.md)。
 
 ## 配置说明
 

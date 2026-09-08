@@ -5,7 +5,7 @@ import { ProTable } from '@ant-design/pro-components';
 import React, { useRef, useState } from 'react';
 import { message } from 'antd';
 // @ts-ignore
-import { useParams } from "react-router-dom";
+import { useParams } from '@umijs/max';
 
 type GithubIssueItem = {
   userAccount: string;

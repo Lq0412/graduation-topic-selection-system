@@ -20,6 +20,12 @@ const Footer: React.FC = () => {
         }}
         links={[
           {
+            key: 'beian',
+            title: '粤ICP备2026131537号',
+            href: 'https://beian.miit.gov.cn/',
+            blankTarget: true,
+          },
+          {
             key: 'github',
             title: <GithubOutlined />,
             href: 'https://github.com/Lq0412/graduation-topic-selection-system',

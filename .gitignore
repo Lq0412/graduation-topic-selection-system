@@ -37,6 +37,11 @@
 # Canonical local-only location. Source files are moved here so build tools cannot package them.
 /.private-data/
 
+# Production deployment secrets and local backup artifacts
+/deploy/.env
+/deploy/backups/
+/deploy/*.tar.gz
+
 # Real student/teacher/director lists and historical topic data
 /work-topic-selection-backend/src/main/resources/2022届*.csv
 /work-topic-selection-backend/src/main/resources/2022届*.xlsx
@@ -175,3 +180,6 @@ fabric.properties
 
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
+
+# WorkBuddy local working directory (contains deployment helper scripts with credentials)
+/.workbuddy/

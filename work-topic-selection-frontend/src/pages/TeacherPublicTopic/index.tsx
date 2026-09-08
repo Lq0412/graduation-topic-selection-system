@@ -14,7 +14,7 @@ import {ModalForm, ProFormSelect, ProFormTextArea} from '@ant-design/pro-form';
 import {Button, ConfigProvider, Divider, message, Modal, Tag, Tooltip, Typography} from 'antd';
 import {useRef, useState} from 'react';
 // @ts-ignore
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from '@umijs/max';
 import {createStyles} from "antd-style";
 
 type GithubIssueItem = {

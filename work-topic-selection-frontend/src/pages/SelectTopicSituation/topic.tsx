@@ -3,7 +3,7 @@ import { ProTable } from '@ant-design/pro-components';
 import React from "react";
 import { getTopicListByAdminUsingPost, selectStudentUsingPost } from "@/services/work-topic-selection/userController";
 import { message } from "antd";
-import { useParams } from "react-router-dom";
+import { useParams } from '@umijs/max';
 
 export type TableListItem = {
   id: number;

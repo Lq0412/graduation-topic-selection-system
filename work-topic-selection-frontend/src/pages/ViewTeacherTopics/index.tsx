@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Card, Typography, Spin, Alert, Button } from 'antd';
 import type { TableColumnsType } from 'antd';
-import { history } from 'umi';
+import { history } from '@umijs/max';
 import { getTopicListUsingPost } from '@/services/work-topic-selection/userController';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 

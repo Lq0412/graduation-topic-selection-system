@@ -7,7 +7,7 @@ import React, { useRef } from 'react';
 import {Button, Dropdown, message, Modal} from "antd";
 import {EllipsisOutlined} from "@ant-design/icons";
 // @ts-ignore
-import {useParams } from "react-router-dom"
+import { useParams } from "@umijs/max"
 
 type GithubIssueItem = {
   userAccount: string;

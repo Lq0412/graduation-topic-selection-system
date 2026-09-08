@@ -9,7 +9,7 @@ import React from "react";
 import {
   getTopicListUsingPost, preSelectTopicByIdUsingPost,
 } from "@/services/work-topic-selection/userController";
-import { useParams } from "react-router-dom";
+import { useParams } from '@umijs/max';
 
 export type TableListItem = {
   id: number;

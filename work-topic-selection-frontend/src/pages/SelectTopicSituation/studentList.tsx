@@ -1,7 +1,7 @@
 import { getUnSelectTopicStudentListUsingPost } from '@/services/work-topic-selection/userController';
 import { ActionType, ProColumns, ProTable } from '@ant-design/pro-components';
 import React, { useRef } from 'react';
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from '@umijs/max';
 import { Button } from "antd";
 import { getUnSelectTopicStudentListCsvUsingPost } from "@/services/work-topic-selection/fileController";
 
