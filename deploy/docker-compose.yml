@@ -1,0 +1,96 @@
+services:
+  work-mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_ai_ci
+      - --skip-name-resolve
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?请在 deploy/.env 中设置 MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: work_topic_selection
+      MYSQL_USER: ${SPRING_DATASOURCE_USERNAME:?请在 deploy/.env 中设置 SPRING_DATASOURCE_USERNAME}
+      MYSQL_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:?请在 deploy/.env 中设置 SPRING_DATASOURCE_PASSWORD}
+      TZ: Asia/Shanghai
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./backups:/backups
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    networks:
+      - work-net
+
+  work-redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["sh", "-c", "exec redis-server --appendonly yes --requirepass \"$$REDIS_PASSWORD\""]
+    environment:
+      REDIS_PASSWORD: ${SPRING_REDIS_PASSWORD:?请在 deploy/.env 中设置 SPRING_REDIS_PASSWORD}
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$$REDIS_PASSWORD\" ping | grep -q PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    networks:
+      - work-net
+
+  work-backend:
+    image: graduation-topic-selection-backend:local
+    restart: unless-stopped
+    depends_on:
+      work-mysql:
+        condition: service_healthy
+      work-redis:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: release
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      SPRING_REDIS_PASSWORD: ${SPRING_REDIS_PASSWORD}
+      APP_CORS_ALLOWED_ORIGINS: https://${SITE_DOMAIN:?请在 deploy/.env 中设置 SITE_DOMAIN}
+      APP_WEBSOCKET_ALLOWED_ORIGINS: https://${SITE_DOMAIN}
+      APP_BOOTSTRAP_ADMIN_ACCOUNT: ${APP_BOOTSTRAP_ADMIN_ACCOUNT:-}
+      APP_BOOTSTRAP_ADMIN_NAME: ${APP_BOOTSTRAP_ADMIN_NAME:-}
+      APP_BOOTSTRAP_ADMIN_PASSWORD: ${APP_BOOTSTRAP_ADMIN_PASSWORD:-}
+      # 可选：邮件验证码/找回密码。留空则邮件功能不可用。
+      SPRING_MAIL_HOST: ${SPRING_MAIL_HOST:-smtp.qq.com}
+      SPRING_MAIL_PORT: ${SPRING_MAIL_PORT:-587}
+      SPRING_MAIL_USERNAME: ${SPRING_MAIL_USERNAME:-}
+      SPRING_MAIL_PASSWORD: ${SPRING_MAIL_PASSWORD:-}
+      # 可选：AI 辅助审题
+      TXY_BOT_APP_KEY: ${TXY_BOT_APP_KEY:-}
+    networks:
+      - work-net
+
+  work-frontend:
+    image: graduation-topic-selection-frontend:local
+    restart: unless-stopped
+    depends_on:
+      - work-backend
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN}
+      BACKEND_UPSTREAM: work-backend:8000
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    networks:
+      - work-net
+
+networks:
+  work-net:
+
+volumes:
+  mysql-data:
+  redis-data:
+  caddy-data:
+  caddy-config:

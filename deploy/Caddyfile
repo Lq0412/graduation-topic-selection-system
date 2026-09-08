@@ -1,0 +1,33 @@
+# 生产环境 Caddy 配置。域名通过 SITE_DOMAIN 注入（如 topic.lqlab.cn），Caddy 自动申请并续期 HTTPS 证书。
+# API 与 WebSocket 统一由 /work_topic_selection_api 前缀转发到后端。
+# 根域 lqlab.cn 与 www.lqlab.cn 统一 301 跳转到 SITE_DOMAIN。
+
+lqlab.cn, www.lqlab.cn {
+    redir https://{$SITE_DOMAIN}{uri} permanent
+}
+
+{$SITE_DOMAIN} {
+    encode zstd gzip
+
+    handle_path /work_topic_selection_api/* {
+        reverse_proxy {$BACKEND_UPSTREAM:work-backend:8000}
+    }
+
+    handle {
+        root * /etc/caddy/dist
+        try_files {path} /index.html
+        file_server
+    }
+
+    header {
+        X-Content-Type-Options nosniff
+        X-Frame-Options SAMEORIGIN
+        Referrer-Policy strict-origin-when-cross-origin
+        -Server
+    }
+
+    log {
+        output stdout
+        format json
+    }
+}

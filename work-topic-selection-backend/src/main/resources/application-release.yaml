@@ -6,5 +6,11 @@ spring:
     database: 0
 server:
   address: 0.0.0.0
-# knife4j:
-#   enable: false
+# 未配置 SMTP 凭据时不让邮件健康检查把整体健康状态拉成 DOWN
+management:
+  health:
+    mail:
+      enabled: false
+# 生产环境关闭接口文档，避免公开暴露接口结构。本地查看文档请使用 develop profile。
+knife4j:
+  enable: false
