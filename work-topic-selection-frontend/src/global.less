@@ -50,6 +50,46 @@ ol {
       }
     }
   }
+
+  /* ---- 移动端适配：收紧桌面端的 40px 页面白边 ---- */
+  /* ProLayout 默认 paddingInlinePageContainerContent=40，桌面正常，
+     375px 屏上两侧共吃掉 80px，内容只剩 295px */
+  .ant-pro-layout-content {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  .ant-pro-page-container-children-container,
+  .ant-page-header {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  /* ProCard 卡片内边距收紧（默认 24px） */
+  .ant-pro-card .ant-pro-card-body {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  /* 表格单元格紧凑化，移动端一屏能看到更多列 */
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td {
+    padding: 8px 6px !important;
+  }
+
+  /* 首页大标题缩小，避免 3 行折行 */
+  h1.ant-typography,
+  .ant-typography h1 {
+    font-size: 26px !important;
+  }
+  h2.ant-typography,
+  .ant-typography h2 {
+    font-size: 20px !important;
+  }
+
+  /* 查询表单按钮不再挤占过多空间 */
+  .ant-pro-query-filter-actions {
+    margin-bottom: 8px !important;
+  }
 }
 .margin-16{
   margin-bottom: 16px;
