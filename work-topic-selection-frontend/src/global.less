@@ -93,6 +93,14 @@ ol {
     background-color: #fafafa;
   }
 
+  /* 长文案按钮在窄屏只保留短文案, 避免按钮过宽挤压内容 */
+  .desktop-only-label {
+    display: none !important;
+  }
+  .mobile-only-label {
+    display: inline !important;
+  }
+
   /* 首页大标题缩小，避免 3 行折行 */
   h1.ant-typography,
   .ant-typography h1 {
@@ -138,6 +146,11 @@ ol {
     display: none !important;
   }
 }
+/* 默认隐藏移动端专用短文案, 仅小屏显示 */
+.mobile-only-label {
+  display: none;
+}
+
 .margin-16{
   margin-bottom: 16px;
 }

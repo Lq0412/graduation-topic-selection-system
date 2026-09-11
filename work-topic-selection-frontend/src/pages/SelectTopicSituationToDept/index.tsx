@@ -159,7 +159,8 @@ const YourComponent = () => {
         <div style={{ width: '100%', maxWidth: 1000, display: 'flex', justifyContent: 'flex-end' }}>
           <Dropdown overlay={menu} trigger={['click']}>
             <Button type="primary">
-              导出列表 <DownloadOutlined />
+              <span className="desktop-only-label">导出列表</span>
+              <span className="mobile-only-label">导出</span> <DownloadOutlined />
             </Button>
           </Dropdown>
         </div>
