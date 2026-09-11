@@ -85,7 +85,8 @@ const AdjustLimitButton = ({ record, action }) => {
   return (
     <Space>
       <a style={{ color: '#454be3' }} onClick={handleModifyClick}>
-        调整剩余出题数量
+        <span className="desktop-only-label">调整剩余出题数量</span>
+        <span className="mobile-only-label">调整额度</span>
       </a>
       <Popconfirm
         title="确定要删除该用户吗？"
