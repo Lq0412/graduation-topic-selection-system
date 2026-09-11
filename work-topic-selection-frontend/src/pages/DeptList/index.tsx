@@ -136,7 +136,7 @@ export default () => {
             name="deptName"
             label="系部名称"
             placeholder="请输入系部名称"
-            required
+            rules={[{required: true, message: '请输入系部名称'}]}
           />
         </ModalForm>,
       ]}

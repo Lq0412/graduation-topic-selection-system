@@ -432,10 +432,10 @@ export default () => {
               ),
             }}
           >
-            <ProFormText width="md" name="topic" label="题目标题" colProps={{xs: 24, sm: 12}} required/>
-            <ProFormText width="md" name="type" label="题目类型" colProps={{xs: 24, sm: 12}} required/>
-            <ProFormTextArea width="md" name="description" label="题目描述" colProps={{xs: 24, sm: 12}} required/>
-            <ProFormTextArea width="md" name="requirement" label="题目要求" colProps={{xs: 24, sm: 12}} required/>
+            <ProFormText width="md" name="topic" label="题目标题" colProps={{xs: 24, sm: 12}} rules={[{required: true, message: '请输入题目标题'}]}/>
+            <ProFormText width="md" name="type" label="题目类型" colProps={{xs: 24, sm: 12}} rules={[{required: true, message: '请输入题目类型'}]}/>
+            <ProFormTextArea width="md" name="description" label="题目描述" colProps={{xs: 24, sm: 12}} rules={[{required: true, message: '请输入题目描述'}]}/>
+            <ProFormTextArea width="md" name="requirement" label="题目要求" colProps={{xs: 24, sm: 12}} rules={[{required: true, message: '请输入题目要求'}]}/>
             <ProFormSelect
               request={async () => {
                 const res = await getDeptListUsingPost({});
@@ -449,7 +449,7 @@ export default () => {
               width="md"
               name="deptName"
               label="所属系部"
-              required
+              rules={[{required: true, message: '请选择所属系部'}]}
             />
             <ProFormSelect
               width="md"

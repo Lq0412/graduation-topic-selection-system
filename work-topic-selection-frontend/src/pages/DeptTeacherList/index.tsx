@@ -169,8 +169,8 @@ export default () => {
               }
             }}
           >
-            <ProFormText width="md" name="userAccount" label="工号" required/>
-            <ProFormText width="md" name="userName" label="姓名" required/>
+            <ProFormText width="md" name="userAccount" label="工号" rules={[{required: true, message: '请输入工号'}]}/>
+            <ProFormText width="md" name="userName" label="姓名" rules={[{required: true, message: '请输入姓名'}]}/>
             <ProFormSelect
               request={async () => {
                 const response = await getDeptListUsingPost({});
@@ -185,13 +185,13 @@ export default () => {
               width="md"
               name="deptName"
               label="系部"
-              required
+              rules={[{required: true, message: '请选择系部'}]}
             />
             <ProFormSelect
               width="md"
               name="project"
               label="专业"
-              required
+              rules={[{required: true, message: '请选择专业'}]}
               dependencies={['deptName']}
               request={async (params) => {
                 const deptName = params?.deptName;
@@ -241,8 +241,8 @@ export default () => {
               }
             }}
           >
-            <ProFormText width="md" name="userAccount" label="账号" required/>
-            <ProFormText width="md" name="userName" label="姓名" required/>
+            <ProFormText width="md" name="userAccount" label="账号" rules={[{required: true, message: '请输入账号'}]}/>
+            <ProFormText width="md" name="userName" label="姓名" rules={[{required: true, message: '请输入姓名'}]}/>
           </ModalForm>
         </div>
       ]}

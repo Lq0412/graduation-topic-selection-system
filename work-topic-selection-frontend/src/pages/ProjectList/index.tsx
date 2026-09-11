@@ -206,7 +206,7 @@ export default () => {
             name="projectName"
             label="专业名称"
             placeholder="请输入专业名称"
-            required
+            rules={[{required: true, message: '请输入专业名称'}]}
           />
           <ProFormSelect
             request={async () => {
@@ -219,7 +219,7 @@ export default () => {
             width="md"
             name="deptName"
             label="系部"
-            required
+            rules={[{required: true, message: '请选择系部'}]}
           />
           <ProFormSelect
             width="md"

@@ -233,7 +233,7 @@ export default () => {
               label="上传 CSV 文件"
               accept=".csv"
               max={1}
-              required
+              rules={[{required: true, message: '请上传上传 CSV 文件'}]}
             >
               <Button icon={<UploadOutlined/>}>选择文件</Button>
             </ProFormUploadButton>
@@ -266,8 +266,8 @@ export default () => {
               }
             }}
           >
-            <ProFormText width="md" name="userAccount" label="学号" required/>
-            <ProFormText width="md" name="userName" label="学生姓名" required/>
+            <ProFormText width="md" name="userAccount" label="学号" rules={[{required: true, message: '请输入学号'}]}/>
+            <ProFormText width="md" name="userName" label="学生姓名" rules={[{required: true, message: '请输入学生姓名'}]}/>
             <ProFormSelect
               request={async () => {
                 const response = await getDeptListUsingPost({});
@@ -282,7 +282,7 @@ export default () => {
               width="md"
               name="deptName"
               label="系部"
-              required
+              rules={[{required: true, message: '请选择系部'}]}
             />
             <ProFormSelect
               request={async () => {
@@ -298,7 +298,7 @@ export default () => {
               width="md"
               name="project"
               label="专业"
-              required
+              rules={[{required: true, message: '请选择专业'}]}
             />
           </ModalForm>
           <ModalForm<{ userAccount: string; userName: string }>
@@ -324,8 +324,8 @@ export default () => {
               }
             }}
           >
-            <ProFormText width="md" name="userAccount" label="学号" required/>
-            <ProFormText width="md" name="userName" label="学生姓名" required/>
+            <ProFormText width="md" name="userAccount" label="学号" rules={[{required: true, message: '请输入学号'}]}/>
+            <ProFormText width="md" name="userName" label="学生姓名" rules={[{required: true, message: '请输入学生姓名'}]}/>
           </ModalForm>
         </div>
       ]}
