@@ -90,6 +90,36 @@ ol {
   .ant-pro-query-filter-actions {
     margin-bottom: 8px !important;
   }
+
+  /* ---- 移动端侧边菜单抽屉：修正锚定与高度 ---- */
+  /* ProLayout 在移动端用 getContainer:false 渲染 Drawer，antd 会输出
+     .ant-drawer-inline { position: absolute }，即锚在文档顶部而非视口。
+     页面一旦滚动，抽屉与遮罩的底边就会上移，下半屏露出未遮罩的内容。
+     同时 ProLayout 给 body 硬编码 height:100vh，移动浏览器地址栏收起时
+     100vh 与实际可视高度不符。此处改为视口锚定 + 动态视口高度。 */
+  .ant-drawer.ant-drawer-inline {
+    position: fixed !important;
+    inset: 0 !important;
+    height: 100% !important;
+    max-height: 100% !important;
+  }
+  .ant-drawer.ant-drawer-inline .ant-drawer-content-wrapper {
+    height: 100vh !important;
+    height: 100dvh !important;
+  }
+  .ant-drawer.ant-drawer-inline .ant-drawer-body {
+    height: 100vh !important;
+    height: 100dvh !important;
+  }
+  /* 抽屉内部的侧边栏同样铺满，避免菜单底部留白 */
+  .ant-drawer.ant-drawer-inline .ant-pro-sider,
+  .ant-drawer.ant-drawer-inline .ant-layout-sider-children {
+    height: 100% !important;
+  }
+  /* 移动端抽屉里不再显示桌面端的折叠箭头 */
+  .ant-drawer.ant-drawer-inline .ant-pro-sider-collapsed-button {
+    display: none !important;
+  }
 }
 .margin-16{
   margin-bottom: 16px;
