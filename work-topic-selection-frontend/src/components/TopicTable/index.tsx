@@ -6,6 +6,7 @@ import {
   preSelectTopicByIdUsingPost,
 } from '@/services/work-topic-selection/userController';
 import './index.css'; // 引入样式文件
+import useIsMobile, {useTableScroll} from '@/utils/useIsMobile';
 
 export type TableListItem = {
   id: number;
@@ -20,7 +21,9 @@ export type TableListItem = {
   status?: number;
 };
 
-const columns: ProColumns<TableListItem>[] = [
+// isMobile 时只保留「序号 / 相关操作 / 剩余数量 / 题目标题」，
+// 其余长文本列在窄屏隐藏，避免表格被撑宽到需要左右拖动
+const buildColumns = (isMobile?: boolean): ProColumns<TableListItem>[] => [
   {
     title: '序号',
     dataIndex: 'id',
@@ -68,6 +71,7 @@ const columns: ProColumns<TableListItem>[] = [
     dataIndex: 'selectAmount',
     search: false,
     width: 80,
+    hideInTable: isMobile,
   },
   {
     title: '题目标题',
@@ -77,28 +81,33 @@ const columns: ProColumns<TableListItem>[] = [
     title: '题目类型',
     dataIndex: 'type',
     width: 100,
+    hideInTable: isMobile,
   },
   {
     title: '题目描述',
     dataIndex: 'description',
     valueType: 'textarea',
+    hideInTable: isMobile,
   },
   {
     title: '要求学生',
     dataIndex: 'requirement',
     valueType: 'textarea',
+    hideInTable: isMobile,
   },
   {
     title: '开始时间',
     dataIndex: 'startTime',
     valueType: 'dateTime',
     width: 160,
+    hideInTable: isMobile,
   },
   {
     title: '结束时间',
     dataIndex: 'endTime',
     valueType: 'dateTime',
     width: 160,
+    hideInTable: isMobile,
   },
 ];
 
@@ -147,6 +156,10 @@ const getRowClassName = (record: TableListItem) => {
 const TopicTable: React.FC<{ teacherName: string }> = ({ teacherName }) => {
   const actionRef = useRef<ActionType>();
 
+  // 移动端自适应：窄屏隐藏次要列并关闭表格横向滚动
+  const isMobile = useIsMobile();
+  const tableScroll = useTableScroll(1600);
+
   useEffect(() => {
     actionRef.current?.reload();
   }, [teacherName]);
@@ -154,7 +167,7 @@ const TopicTable: React.FC<{ teacherName: string }> = ({ teacherName }) => {
   return (
     <ProTable<TableListItem>
       actionRef={actionRef}
-      columns={columns}
+      columns={buildColumns(isMobile)}
       // @ts-ignore
       request={async (params = {}) => {
         try {
@@ -178,7 +191,7 @@ const TopicTable: React.FC<{ teacherName: string }> = ({ teacherName }) => {
           };
         }
       }}
-      scroll={{ x: 1600 }}
+      scroll={tableScroll}
       search={false}
       pagination={{ pageSize: 10 }}
       rowKey="id"

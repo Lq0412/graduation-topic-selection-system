@@ -6,6 +6,7 @@ import {
   checkTopicUsingPost,
   getTopicListUsingPost,
 } from "@/services/work-topic-selection/userController";
+import useIsMobile, {useTableScroll} from "@/utils/useIsMobile";
 
 export type TableListItem = {
   id: number;
@@ -26,6 +27,10 @@ const TopicReviewTable: React.FC = () => {
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
 
+  // 移动端自适应：窄屏隐藏次要列并关闭表格横向滚动
+  const isMobile = useIsMobile();
+  const tableScroll = useTableScroll(1300);
+
   const columns: ProColumns<TableListItem>[] = [
     {
       title: '序号',
@@ -40,11 +45,13 @@ const TopicReviewTable: React.FC = () => {
     {
       title: '题目类型',
       dataIndex: 'type',
+      hideInTable: isMobile,
     },
     {
       title: '题目描述',
       dataIndex: 'description',
       valueType: 'textarea',
+      hideInTable: isMobile,
     },
     {
       title: '指导老师',
@@ -54,11 +61,14 @@ const TopicReviewTable: React.FC = () => {
       title: '对学生要求',
       dataIndex: 'requirement',
       valueType: 'textarea',
+      hideInTable: isMobile,
     },
     {
       title: '操作',
       valueType: 'option',
       key: 'option',
+      width: 110,
+      fixed: 'right',
       render: (text, record, _, action) => [
         <a
           key="approve"
@@ -125,7 +135,7 @@ const TopicReviewTable: React.FC = () => {
             };
           }
         }}
-        scroll={{ x: 1300 }}
+        scroll={tableScroll}
         options={false}
         search={{
           labelWidth: 'auto',

@@ -1,3 +1,4 @@
+import useIsMobile from '@/utils/useIsMobile';
 import {
   addProjectUsingPost,
   deleteProjectUsingPost,
@@ -26,6 +27,9 @@ type GithubIssueItem = {
 };
 
 export default () => {
+  // 移动端自适应：窄屏隐藏次要列
+  const isMobile = useIsMobile();
+
   const actionRef = useRef<ActionType>();
   // 选题组选项取自后端实际数据, 不再写死, 改组名后下拉会自动跟随
   const [groupOptions, setGroupOptions] = useState<{ label: string; value: string }[]>([]);
@@ -51,6 +55,7 @@ export default () => {
     {
       title: '系部',
       dataIndex: 'deptName',
+      hideInTable: isMobile,
     },
     {
       title: '专业',

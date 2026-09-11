@@ -1,3 +1,4 @@
+import useIsMobile from '@/utils/useIsMobile';
 import {
   addTopicUsingPost,
   checkTopicUsingPost,
@@ -58,6 +59,9 @@ const useStyle = createStyles(({prefixCls, css}) => ({
 }));
 
 export default () => {
+  // 移动端自适应：窄屏隐藏次要列
+  const isMobile = useIsMobile();
+
   const actionRef = useRef<ActionType>();
   const navigate = useNavigate();
 
@@ -79,28 +83,33 @@ export default () => {
     {
       title: '题目类型',
       dataIndex: 'type',
+      hideInTable: isMobile,
     },
     {
       title: '题目描述',
       dataIndex: 'description',
       valueType: 'textarea',
+      hideInTable: isMobile,
     },
     {
       title: '题目要求',
       dataIndex: 'requirement',
       valueType: 'textarea',
+      hideInTable: isMobile,
     },
     {
       title: '剩余数量',
       dataIndex: 'surplusQuantity',
       search: false,
       editable: false,
+      hideInTable: isMobile,
     },
     {
       title: '所属系部',
       dataIndex: 'deptName',
       valueType: 'select',
       editable: false,
+      hideInTable: isMobile,
       request: async () => {
         const response = await getDeptListUsingPost({});
         return (
@@ -116,6 +125,7 @@ export default () => {
       dataIndex: 'deptTeacher',
       valueType: 'select',
       editable: false,
+      hideInTable: isMobile,
       request: async () => {
         const response = await getTeacherUsingPost1({userRole: 2});
         return (
@@ -154,6 +164,7 @@ export default () => {
       title: '打回理由',
       dataIndex: 'reason',
       editable: false,
+      hideInTable: isMobile,
     },
     {
       title: '操作',

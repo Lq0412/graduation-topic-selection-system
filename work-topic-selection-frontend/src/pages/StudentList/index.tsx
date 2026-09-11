@@ -1,3 +1,4 @@
+import useIsMobile from '@/utils/useIsMobile';
 import {uploadFileUsingPost} from '@/services/work-topic-selection/fileController';
 import {
   addUserUsingPost,
@@ -22,6 +23,9 @@ type GithubIssueItem = {
 };
 
 export default () => {
+  // 移动端自适应：窄屏隐藏次要列
+  const isMobile = useIsMobile();
+
   const actionRef = useRef<ActionType>();
   const [pageNum, setPageNum] = useState(1);
   const [pageSize, setPageSize] = useState(10); // 默认10
@@ -45,6 +49,7 @@ export default () => {
     {
       title: '系部',
       dataIndex: 'dept',
+      hideInTable: isMobile,
     },
     {
       title: '专业',
@@ -54,6 +59,7 @@ export default () => {
       title: '操作',
       valueType: 'option',
       key: 'option',
+      width: 60,
       render: (_text, record, _, action) => [
         <Popconfirm
           key="delete"

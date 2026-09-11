@@ -10,6 +10,7 @@ import {
   getTopicListUsingPost, preSelectTopicByIdUsingPost,
 } from "@/services/work-topic-selection/userController";
 import { useParams } from '@umijs/max';
+import useIsMobile, {useTableScroll} from '@/utils/useIsMobile';
 
 export type TableListItem = {
   id: number;
@@ -24,7 +25,7 @@ export type TableListItem = {
   memo: string;
 };
 
-const columns: ProColumns<TableListItem>[] = [
+const buildColumns = (isMobile?: boolean): ProColumns<TableListItem>[] => [
   {
     dataIndex: 'id',
     valueType: 'indexBorder',
@@ -35,6 +36,7 @@ const columns: ProColumns<TableListItem>[] = [
     valueType: 'option',
     key: 'option',
     width: 70,
+    fixed: 'right',
     render: (text, record, _, action) => [
       <a
         key="select"
@@ -72,25 +74,32 @@ const columns: ProColumns<TableListItem>[] = [
     title: '题目类型',
     dataIndex: 'type',
     width: 100,
+    hideInTable: isMobile,
   },
   {
     title: '题目描述',
     dataIndex: 'description',
     valueType: 'textarea',
+    hideInTable: isMobile,
   },
   {
     title: '要求学生',
     dataIndex: 'requirement',
     valueType: 'textarea',
+    hideInTable: isMobile,
   },
 ];
 
 const TopicTable: React.FC = () => {
   const { teacherName } = useParams<{ teacherName: string }>();
 
+  // 移动端自适应：窄屏隐藏次要列并关闭表格横向滚动
+  const isMobile = useIsMobile();
+  const tableScroll = useTableScroll(1300);
+
   return (
     <ProTable<TableListItem>
-      columns={columns}
+      columns={buildColumns(isMobile)}
       //@ts-ignore
       request={async (params = {}, sort, filter) => {
         console.log(sort, filter, params);
@@ -111,7 +120,7 @@ const TopicTable: React.FC = () => {
           };
         }
       }}
-      scroll={{ x: 1300 }}
+      scroll={tableScroll}
       options={false}
       search={{
         labelWidth: 'auto',

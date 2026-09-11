@@ -4,6 +4,7 @@ import type { TableColumnsType } from 'antd';
 import { history } from '@umijs/max';
 import { getTopicListUsingPost } from '@/services/work-topic-selection/userController';
 import { ArrowLeftOutlined } from '@ant-design/icons';
+import useIsMobile from '@/utils/useIsMobile';
 
 const { Title } = Typography;
 
@@ -100,6 +101,10 @@ const ViewTeacherTopics: React.FC = () => {
     }
   }, [teacherName]);
 
+  // 移动端自适应：窄屏隐藏次要列，并去掉 fixed 列（不再横向滚动）
+  const isMobile = useIsMobile();
+  const mobileHiddenKeys = ['selectAmount', 'description', 'requirement', 'startTime', 'endTime'];
+
   // 表格列定义 - 优化列宽和显示
   const columns: TableColumnsType<API.Topic> = [
     {
@@ -182,7 +187,9 @@ const ViewTeacherTopics: React.FC = () => {
         </div>
       )
     },
-  ];
+  ]
+    .filter((c) => !(isMobile && mobileHiddenKeys.includes(String(c.key))))
+    .map((c) => (isMobile ? { ...c, fixed: undefined } : c));
 
   return (
     <div style={{ 
@@ -231,7 +238,7 @@ const ViewTeacherTopics: React.FC = () => {
             dataSource={topics}
             columns={columns}
             rowKey="id"
-            scroll={{ x: 'max-content' }}
+            scroll={isMobile ? undefined : { x: 'max-content' }}
             pagination={{
               pageSize: 20,
               showSizeChanger: true,

@@ -36,21 +36,6 @@ ol {
 }
 
 @media (max-width: 768px) {
-  .ant-table {
-    width: 100%;
-    overflow-x: auto;
-    &-thead > tr,
-    &-tbody > tr {
-      > th,
-      > td {
-        white-space: pre;
-        > span {
-          display: block;
-        }
-      }
-    }
-  }
-
   /* ---- 移动端适配：收紧桌面端的 40px 页面白边 ---- */
   /* ProLayout 默认 paddingInlinePageContainerContent=40，桌面正常，
      375px 屏上两侧共吃掉 80px，内容只剩 295px */
@@ -70,27 +55,66 @@ ol {
     padding-right: 12px !important;
   }
 
+  /* ---- 表格：窄屏自适应列宽，不再横向拖动 ---- */
+  /* 之前用 :last-child { position: sticky; right: 0 } 把最后一列钉在右边，
+     但表格本身是横向滚动布局，sticky 是相对滚动视口定位的，
+     会把操作列/末列拽到容器右侧并压在其他列上面，造成列重叠。
+     固定列一律交给 antd 原生的 fixed: 'right'（渲染为
+     .ant-table-cell-fix-right，antd 会自己算偏移与阴影）。 */
+  .ant-table-content > table,
+  .ant-table-body > table,
+  .ant-table-header > table {
+    width: 100% !important;
+    min-width: 0 !important;
+    /* 用 auto 而非 fixed：fixed 会把未指定 width 的列平均分配，
+       出现「工号 / 名字 / 操作」被压到 28px、文字竖排的情况。
+       auto 按内容分配列宽，长文本列自然更宽。 */
+    table-layout: auto !important;
+  }
+  .ant-table-content,
+  .ant-table-body {
+    overflow-x: visible !important;
+  }
+  /* 单元格允许换行，长文本不再把表格撑宽 */
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td {
+    white-space: normal !important;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    /* 换行会让 min-content 退化成 1 个字符，短列（工号 / 姓名 / 操作）
+       会被长文本列挤到 20 多像素、文字竖排。给一个下限兜底。 */
+    min-width: 48px;
+  }
+  /* 固定列（操作等）保持不换行，避免按钮被折断 */
+  .ant-table-cell-fix-left,
+  .ant-table-cell-fix-right {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    background-color: #fff;
+  }
+  .ant-table-thead > tr > th.ant-table-cell-fix-left,
+  .ant-table-thead > tr > th.ant-table-cell-fix-right {
+    background-color: #fafafa;
+  }
+
+  /* 单元格内的按钮 / 链接文字不折行：空间不足时整个按钮换到下一行，
+     而不是把「调整额度」拆成「调整额 / 度」竖排 */
+  .ant-table-tbody > tr > td .ant-btn,
+  .ant-table-tbody > tr > td a {
+    white-space: nowrap;
+  }
+
   /* 表格单元格紧凑化，移动端一屏能看到更多列 */
   .ant-table-thead > tr > th,
   .ant-table-tbody > tr > td {
     padding: 8px 6px !important;
+    font-size: 13px;
   }
 
-  /* ---- 操作列吸附在右侧 ---- */
-  /* 移动端表格内容宽于容器，必须横向滚动；操作列（编辑/删除等入口）
-     被推到视口外，看着像"没有操作按钮"。这里把每张表的最后一列
-     吸附在容器右侧，并补背景色与左侧投影，保证始终可见可点。 */
-  .ant-table-thead > tr > th:last-child,
-  .ant-table-tbody > tr > td:last-child {
-    position: sticky !important;
-    right: 0;
-    z-index: 2;
-    background-color: #fff;
-    box-shadow: -6px 0 8px -6px rgba(0, 0, 0, 0.18);
-  }
-  .ant-table-thead > tr > th:last-child {
-    z-index: 3;
-    background-color: #fafafa;
+  /* 勾选列收紧，把宽度让给内容列 */
+  .ant-table-selection-column {
+    padding-left: 4px !important;
+    padding-right: 4px !important;
   }
 
   /* 长文案按钮在窄屏只保留短文案, 避免按钮过宽挤压内容 */

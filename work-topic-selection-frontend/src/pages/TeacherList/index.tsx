@@ -1,3 +1,4 @@
+import useIsMobile from '@/utils/useIsMobile';
 // @ts-ignore
 import {uploadFileUsingPost} from '@/services/work-topic-selection/fileController';
 import {
@@ -29,6 +30,9 @@ type GithubIssueItem = {
 };
 
 export default () => {
+  // 移动端自适应：窄屏隐藏次要列
+  const isMobile = useIsMobile();
+
   const actionRef = useRef<ActionType>();
 
   const columns: ProColumns<GithubIssueItem>[] = [
@@ -49,12 +53,13 @@ export default () => {
     {
       title: '系部',
       dataIndex: 'dept',
+      hideInTable: isMobile,
     },
     {
       title: '选题组 / 额度',
       dataIndex: 'groupQuota',
       search: false,
-      width: 200,
+      width: 150,
       render: (_text, record) => {
         const list = record.groupQuota || [];
         if (list.length === 0) {
@@ -78,6 +83,7 @@ export default () => {
       title: '操作',
       valueType: 'option',
       key: 'option',
+      width: 90,
       render: (_text, record, _, action) => [
         <AdjustLimitButton key={`adjust-${record.userAccount}`} record={record} action={action}/>
       ],

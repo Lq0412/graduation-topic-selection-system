@@ -1,3 +1,4 @@
+import useIsMobile from '@/utils/useIsMobile';
 import {
   addUserUsingPost,
   deleteUserUsingPost,
@@ -20,6 +21,9 @@ type GithubIssueItem = {
 };
 
 export default () => {
+  // 移动端自适应：窄屏隐藏次要列
+  const isMobile = useIsMobile();
+
   const actionRef = useRef<ActionType>();
 
   const columns: ProColumns<GithubIssueItem>[] = [
@@ -40,6 +44,7 @@ export default () => {
     {
       title: '系部',
       dataIndex: 'dept',
+      hideInTable: isMobile,
     },
     {
       title: '专业',
@@ -50,6 +55,7 @@ export default () => {
       title: '操作',
       valueType: 'option',
       key: 'option',
+      width: 60,
       render: (text, record, _, action) => [
         <Popconfirm
           key="delete"

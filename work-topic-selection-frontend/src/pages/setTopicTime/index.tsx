@@ -20,6 +20,7 @@ import {ModalForm} from "@ant-design/pro-form/lib";
 import {ProFormDateTimeRangePicker} from '@ant-design/pro-form';
 import {DeptCrossTopicConfig} from '@/components';
 import {WebSocketSender} from "@/components/WebSocket";
+import useIsMobile, {useTableScroll} from "@/utils/useIsMobile";
 
 export type TableListItem = {
   id: number;
@@ -31,11 +32,14 @@ export type TableListItem = {
   endTime: string;
 };
 
-const columns: ProColumns<TableListItem>[] = [
+// 已发布题目列定义（含开启 / 结束时间）
+// isMobile 时隐藏次要列，让表格在窄屏自适应，不再横向拖动
+const buildColumns = (isMobile?: boolean): ProColumns<TableListItem>[] => [
   {
     dataIndex: 'id',
     valueType: 'indexBorder',
     width: 48,
+    hideInTable: isMobile,
   },
   {
     title: '题目',
@@ -44,6 +48,7 @@ const columns: ProColumns<TableListItem>[] = [
   {
     title: '题目类型',
     dataIndex: 'type',
+    hideInTable: isMobile,
   },
   {
     dataIndex: 'teacherName',
@@ -52,25 +57,29 @@ const columns: ProColumns<TableListItem>[] = [
   {
     title: '系部',
     dataIndex: 'deptName',
+    hideInTable: isMobile,
   },
   {
     title: '开启时间',
     dataIndex: 'startTime',
-    valueType: "dateTime"
+    valueType: "dateTime",
+    hideInTable: isMobile,
   },
   {
     title: '结束时间',
     dataIndex: 'endTime',
-    valueType: "dateTime"
+    valueType: "dateTime",
+    width: 115,
   }
 ];
 
 // 未发布题目不显示时间的列定义
-const unpublishedColumns: ProColumns<TableListItem>[] = [
+const buildUnpublishedColumns = (isMobile?: boolean): ProColumns<TableListItem>[] => [
   {
     dataIndex: 'id',
     valueType: 'indexBorder',
     width: 48,
+    hideInTable: isMobile,
   },
   {
     title: '题目',
@@ -87,10 +96,15 @@ const unpublishedColumns: ProColumns<TableListItem>[] = [
   {
     title: '系部',
     dataIndex: 'deptName',
+    hideInTable: isMobile,
   }
 ];
 
 export default () => {
+  // 移动端自适应：窄屏隐藏次要列并关闭表格横向滚动
+  const isMobile = useIsMobile();
+  const tableScroll = useTableScroll(1300);
+
   // 分别管理两个分页器
   const [pageNum0, setPageNum0] = useState(1);
   const [pageSize0, setPageSize0] = useState(10);
@@ -392,7 +406,7 @@ export default () => {
                 {/* 跨系选题配置区域 */}
                 <DeptCrossTopicConfig/>
                 <ProTable<TableListItem>
-                  columns={unpublishedColumns}
+                  columns={buildUnpublishedColumns(isMobile)}
                   rowSelection={{
                     selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT],
                     preserveSelectedRowKeys: true,
@@ -508,7 +522,7 @@ export default () => {
                       />
                     </ModalForm>
                   )}
-                  scroll={{x: 1300}}
+                  scroll={tableScroll}
                   options={false}
                   search={{labelWidth: 'auto'}}
                   pagination={{
@@ -547,7 +561,7 @@ export default () => {
             ),
             children: (
               <ProTable<TableListItem>
-                columns={columns}
+                columns={buildColumns(isMobile)}
                 actionRef={actionRef1}
                 rowSelection={{
                   selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT],
@@ -638,7 +652,7 @@ export default () => {
                     取消发布
                   </Button>
                 )}
-                scroll={{x: 1300}}
+                scroll={tableScroll}
                 options={false}
                 search={{labelWidth: 'auto'}}
                 pagination={{

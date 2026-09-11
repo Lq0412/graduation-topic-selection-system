@@ -4,6 +4,7 @@ import React from "react";
 import { getTopicListByAdminUsingPost, selectStudentUsingPost } from "@/services/work-topic-selection/userController";
 import { message } from "antd";
 import { useParams } from '@umijs/max';
+import useIsMobile, {useTableScroll} from '@/utils/useIsMobile';
 
 export type TableListItem = {
   id: number;
@@ -16,6 +17,10 @@ export type TableListItem = {
 
 const TopicSelectionTable: React.FC = () => {
   const { userAccount } = useParams();
+
+  // 移动端自适应：窄屏隐藏次要列并关闭表格横向滚动
+  const isMobile = useIsMobile();
+  const tableScroll = useTableScroll(1300);
 
   const columns: ProColumns<TableListItem>[] = [
     {
@@ -36,11 +41,13 @@ const TopicSelectionTable: React.FC = () => {
       title: '题目描述',
       dataIndex: 'description',
       valueType: 'textarea',
+      hideInTable: isMobile,
     },
     {
       title: '对学生要求',
       dataIndex: 'requirement',
       valueType: 'textarea',
+      hideInTable: isMobile,
     },
     {
       title: '指导老师',
@@ -51,6 +58,8 @@ const TopicSelectionTable: React.FC = () => {
       title: '操作',
       valueType: 'option',
       key: 'option',
+      width: 70,
+      fixed: 'right',
       render: (text, record, _, action) => [
         <a
           key="select"
@@ -102,7 +111,7 @@ const TopicSelectionTable: React.FC = () => {
       columns={columns}
       // @ts-ignore
       request={fetchTopics}
-      scroll={{ x: 1300 }}
+      scroll={tableScroll}
       options={false}
       search={{
         labelWidth: 'auto',

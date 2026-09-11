@@ -7,6 +7,7 @@ import { ProColumns, ProTable } from '@ant-design/pro-components';
 import { message } from 'antd';
 import React, { useState } from 'react';
 import './index.css';
+import useIsMobile, {useTableScroll} from '@/utils/useIsMobile';
 
 export type TableListItem = {
   id: number;
@@ -58,7 +59,7 @@ const getRowClassName = (record: TableListItem) => {
   return record.surplusQuantity === 0 ? 'row-disabled' : '';
 };
 
-const columns: ProColumns<TableListItem>[] = [
+const buildColumns = (isMobile?: boolean): ProColumns<TableListItem>[] => [
   {
     title: '序号',
     dataIndex: 'id',
@@ -69,6 +70,8 @@ const columns: ProColumns<TableListItem>[] = [
     title: '操作',
     valueType: 'option',
     key: 'option',
+    width: 140,
+    fixed: 'right',
     render: (text, record, _, action) => [
       <a
         key="select"
@@ -114,27 +117,35 @@ const columns: ProColumns<TableListItem>[] = [
     title: '预选人数',
     dataIndex: 'selectAmount',
     search: false,
+    hideInTable: isMobile,
   },
   {
     title: '剩余数量',
     dataIndex: 'surplusQuantity',
     search: false,
+    hideInTable: isMobile,
   },
   {
     title: '开启时间',
     dataIndex: 'startTime',
     valueType: 'dateTime',
     search: false,
+    hideInTable: isMobile,
   },
   {
     title: '结束时间',
     dataIndex: 'endTime',
     valueType: 'dateTime',
     search: false,
+    hideInTable: isMobile,
   },
 ];
 
 export default () => {
+  // 移动端自适应：窄屏隐藏次要列并关闭表格横向滚动
+  const isMobile = useIsMobile();
+  const tableScroll = useTableScroll(1300);
+
   // 分页相关状态
   const [pageNum, setPageNum] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -142,7 +153,7 @@ export default () => {
 
   return (
     <ProTable<TableListItem>
-      columns={columns}
+      columns={buildColumns(isMobile)}
       request={async (params = {}) => {
         try {
           // 注意：如果你的接口不支持分页参数，需要修改接口，或者前端分页
@@ -176,7 +187,7 @@ export default () => {
           };
         }
       }}
-      scroll={{ x: 1300 }}
+      scroll={tableScroll}
       options={false}
       search={false}
       pagination={{
