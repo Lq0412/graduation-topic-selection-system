@@ -3,11 +3,15 @@ import {history, useModel} from '@umijs/max';
 import {message, Modal, Space, Spin, Typography} from 'antd';
 import {createStyles} from 'antd-style';
 import type {MenuInfo} from 'rc-menu/lib/interface';
-import React, {useCallback} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {flushSync} from 'react-dom';
 import HeaderDropdown from '../HeaderDropdown';
 import {USER_ROLE_ENUM, USER_ROLE_MAP} from '@/constants/user';
-import {userLogoutUsingPost, userToggleLoginUsingPost} from '@/services/work-topic-selection/userController';
+import {
+  getToggleAvailableUsingGet,
+  userLogoutUsingPost,
+  userToggleLoginUsingPost,
+} from '@/services/work-topic-selection/userController';
 
 export type GlobalHeaderRightProps = {
   menu?: boolean;
@@ -80,6 +84,33 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({menu, children
 
   const {initialState, setInitialState} = useModel('@@initialState');
   const currentUser = initialState?.currentUser;
+
+  // 仅当当前账号确实存在「已配对的另一角色账号」时才展示切换身份入口。
+  // 此前的判断只看角色, 导致全体教师都能看到入口, 但点下去必然报错。
+  const [canToggleRole, setCanToggleRole] = useState(false);
+  useEffect(() => {
+    const role = currentUser?.userRole;
+    const switchableRole = role === USER_ROLE_ENUM.TEACHER || role === USER_ROLE_ENUM.DIRECTOR;
+    if (!switchableRole) {
+      setCanToggleRole(false);
+      return;
+    }
+    let cancelled = false;
+    getToggleAvailableUsingGet()
+      .then((res) => {
+        if (!cancelled) {
+          setCanToggleRole(res.code === 0 && res.data === true);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setCanToggleRole(false);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [currentUser?.userRole]);
 
   const onMenuClick = useCallback(
     async (event: MenuInfo) => {
@@ -217,8 +248,8 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({menu, children
     },
   ];
 
-  // 只有专业负责人和教师角色才显示切换身份按钮
-  const showSwitchRole = currentUser.userRole === USER_ROLE_ENUM.DIRECTOR || currentUser.userRole === USER_ROLE_ENUM.TEACHER;
+  // 只有专业负责人和教师角色, 且确实存在已配对的另一角色账号时才显示切换身份按钮
+  const showSwitchRole = canToggleRole;
 
   const menuItems = [
     ...userInfoItems,

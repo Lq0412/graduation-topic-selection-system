@@ -792,6 +792,50 @@ public class UserController {
     }
 
     /**
+     * 查询当前账号能否切换身份
+     * <p>
+     * 仅用于前端决定「切换身份」入口是否展示, 避免入口对所有教师可见但点下去必然报错。
+     * 判定条件与 /user/toggle/login 完全一致。
+     */
+    @SaCheckLogin
+    @GetMapping("/toggle/available")
+    public BaseResponse<Boolean> toggleAvailable() {
+        User loginUser = userService.userGetCurrentLoginUser();
+        ThrowUtils.throwIf(loginUser == null, CodeBindMessageEnums.NO_LOGIN_ERROR, "登录状态已失效, 请重新登陆");
+        return TheResult.success(CodeBindMessageEnums.SUCCESS, resolveToggleTargetRole(loginUser) != null);
+    }
+
+    /**
+     * 解析当前账号可切换到的目标角色, 不可切换时返回 null
+     * <p>
+     * 条件与 /user/toggle/login 保持一致: 已绑定邮箱, 且存在唯一一个「同名 + 同系部 + 同邮箱 + 状态为老用户」的
+     * 目标角色账号。BCrypt 密码各自带随机盐无法比对, 因此只能靠这些字段唯一确定对方账号。
+     */
+    Integer resolveToggleTargetRole(User loginUser) {
+        if (loginUser == null || StringUtils.isBlank(loginUser.getEmail())) {
+            return null;
+        }
+        for (Integer candidateRole : new Integer[]{UserRoleEnum.TEACHER.getCode(), UserRoleEnum.DEPT.getCode()}) {
+            if (!isAllowedRoleToggle(loginUser.getUserRole(), candidateRole)) {
+                continue;
+            }
+            List<User> userList = userService.list(
+                    new QueryWrapper<User>()
+                            .ne("id", loginUser.getId())
+                            .eq("status", "老用户")
+                            .eq("userName", loginUser.getUserName())
+                            .eq("dept", loginUser.getDept())
+                            .eq("email", loginUser.getEmail())
+                            .eq("userRole", candidateRole)
+            );
+            if (userList.size() == 1) {
+                return candidateRole;
+            }
+        }
+        return null;
+    }
+
+    /**
      * 重置用户密码
      */
     @SaCheckLogin

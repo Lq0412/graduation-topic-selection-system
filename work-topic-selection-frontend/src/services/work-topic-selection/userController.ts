@@ -771,6 +771,14 @@ export async function userToggleLoginUsingPost(
   });
 }
 
+/** 查询当前账号能否切换身份 GET /user/toggle/available */
+export async function getToggleAvailableUsingGet(options?: { [key: string]: any }) {
+  return request<API.BaseResponseBoolean_>('/user/toggle/available', {
+    method: 'GET',
+    ...(options || {}),
+  });
+}
+
 /** getTopicLock GET /user/topic_lock */
 export async function getTopicLockUsingGet(options?: { [key: string]: any }) {
   return request<API.BaseResponseTopicLockVO_>('/user/topic_lock', {
