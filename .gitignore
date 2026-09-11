@@ -44,7 +44,8 @@
 
 # Real student/teacher/director lists and historical topic data
 # 2023 级真实名单与导入产物：教师出题额度一览含 178 位真实教师姓名/工号，
-# 生成导入文件.py 含初始口令规律（12345678+工号），均不得进入公开仓库
+# 生成导入文件.py 是本地生成脚本（线上实际口令为随机串，未采用其固定前缀写法），
+# 两者已移出工作区，保留规则以防日后重新生成时误提交
 /deploy/教师出题额度一览.csv
 /deploy/生成导入文件.py
 /work-topic-selection-backend/src/main/resources/2022届*.csv
