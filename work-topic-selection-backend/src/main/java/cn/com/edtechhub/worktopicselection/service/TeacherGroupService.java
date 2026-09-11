@@ -60,6 +60,19 @@ public class TeacherGroupService {
         return result;
     }
 
+    /**
+     * 查询系统内现有选题组名称, 供配置专业选题组等下拉场景使用
+     * <p>
+     * 取 project 与 teacher_group_quota 两表已有组名的并集, 避免下拉选项被写死而与实际数据脱节。
+     */
+    public List<String> allGroups() {
+        return jdbcTemplate.queryForList(
+                "SELECT groupName FROM ("
+                        + "SELECT DISTINCT groupName FROM project WHERE groupName IS NOT NULL AND groupName<>'' "
+                        + "UNION SELECT DISTINCT groupName FROM teacher_group_quota WHERE groupName IS NOT NULL AND groupName<>''"
+                        + ") g ORDER BY groupName", String.class);
+    }
+
     // The caller holds the teacher row lock, shared with add/delete/update topic.
     public void validate(String account, String group, Long excludedTopicId) {
         List<Integer> limits = jdbcTemplate.queryForList(

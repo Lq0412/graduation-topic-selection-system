@@ -21,6 +21,18 @@ export async function getTeacherGroupsBatchUsingPost(
   });
 }
 
+/** 查询系统内现有选题组列表 GET /user/group/list */
+export async function getGroupListUsingGet(options?: { [key: string]: any }) {
+  return request<{
+    code?: number;
+    message?: string;
+    data?: string[];
+  }>('/user/group/list', {
+    method: 'GET',
+    ...(options || {}),
+  });
+}
+
 /** addUser POST /user/add */
 export async function addUserUsingPost(body: API.UserAddRequest, options?: { [key: string]: any }) {
   return request<API.BaseResponseLong_>('/user/add', {

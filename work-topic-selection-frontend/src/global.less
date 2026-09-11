@@ -76,6 +76,23 @@ ol {
     padding: 8px 6px !important;
   }
 
+  /* ---- 操作列吸附在右侧 ---- */
+  /* 移动端表格内容宽于容器，必须横向滚动；操作列（编辑/删除等入口）
+     被推到视口外，看着像"没有操作按钮"。这里把每张表的最后一列
+     吸附在容器右侧，并补背景色与左侧投影，保证始终可见可点。 */
+  .ant-table-thead > tr > th:last-child,
+  .ant-table-tbody > tr > td:last-child {
+    position: sticky !important;
+    right: 0;
+    z-index: 2;
+    background-color: #fff;
+    box-shadow: -6px 0 8px -6px rgba(0, 0, 0, 0.18);
+  }
+  .ant-table-thead > tr > th:last-child {
+    z-index: 3;
+    background-color: #fafafa;
+  }
+
   /* 首页大标题缩小，避免 3 行折行 */
   h1.ant-typography,
   .ant-typography h1 {

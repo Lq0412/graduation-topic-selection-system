@@ -2,6 +2,7 @@ import {
   addProjectUsingPost,
   deleteProjectUsingPost,
   getDeptListUsingPost,
+  getGroupListUsingGet,
   getProjectUsingPost,
   updateProjectGroupUsingPost,
 } from '@/services/work-topic-selection/userController';
@@ -15,7 +16,7 @@ import {
 } from '@ant-design/pro-components';
 import { ModalForm } from '@ant-design/pro-form';
 import {Button, message, Popconfirm} from 'antd';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type GithubIssueItem = {
   id: number;
@@ -26,11 +27,19 @@ type GithubIssueItem = {
 
 export default () => {
   const actionRef = useRef<ActionType>();
-  const groupOptions = [
-    {label: '第一组', value: '第一组'},
-    {label: '第二组', value: '第二组'},
-    {label: '第三组', value: '第三组'},
-  ];
+  // 选题组选项取自后端实际数据, 不再写死, 改组名后下拉会自动跟随
+  const [groupOptions, setGroupOptions] = useState<{ label: string; value: string }[]>([]);
+  useEffect(() => {
+    getGroupListUsingGet()
+      .then((res) => {
+        if (res.code === 0 && res.data) {
+          setGroupOptions(res.data.map((item) => ({ label: item, value: item })));
+        }
+      })
+      .catch((error) => {
+        console.error('获取选题组列表失败:', error);
+      });
+  }, []);
 
   const columns: ProColumns<GithubIssueItem>[] = [
     {

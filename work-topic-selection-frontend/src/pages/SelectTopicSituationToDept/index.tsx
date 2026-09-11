@@ -202,7 +202,9 @@ const YourComponent = () => {
             <div
               key={title}
               style={{
-                width: 500,
+                width: '100%',
+                minWidth: 280,
+                maxWidth: 500,
                 background: '#fff',
                 borderRadius: 12,
                 overflow: 'hidden',

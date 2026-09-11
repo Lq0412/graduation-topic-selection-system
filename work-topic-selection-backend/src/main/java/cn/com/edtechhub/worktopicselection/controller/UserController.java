@@ -3489,6 +3489,17 @@ public class UserController {
         return TheResult.success(CodeBindMessageEnums.SUCCESS, teacherGroupService.groupsBatch(accounts));
     }
 
+    /**
+     * 查询系统内现有的选题组名称列表, 供管理员配置专业选题组、添加专业等下拉使用
+     * <p>
+     * 组名以数据库实际取值为准, 前端不再写死: 改组名后下拉会自动跟随。
+     */
+    @SaCheckRole(value = {"admin", "dept"}, mode = SaMode.OR)
+    @GetMapping("/group/list")
+    public BaseResponse<List<String>> getGroupList() {
+        return TheResult.success(CodeBindMessageEnums.SUCCESS, teacherGroupService.allGroups());
+    }
+
     String requireUserGroup(User user) {
         Project project = projectService.getOne(new QueryWrapper<Project>().eq("projectName", user.getProject()));
         ThrowUtils.throwIf(project == null || StringUtils.isBlank(project.getGroupName()),
