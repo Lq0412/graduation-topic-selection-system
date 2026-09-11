@@ -130,7 +130,7 @@ public class MailServiceImpl implements MailService {
                 "    <div style='text-align:center; margin:20px 0;'>" +
                 "      <span style='display:inline-block; font-size:28px; font-weight:bold; color:#fff; background:#00785a; padding:10px 20px; border-radius:6px;'>" + escapedText + "</span>" +
                 "    </div>" +
-                "    <p style='font-size:14px; color:#666;'>请及时处理并重新提交审核，避免拖延进程，如果遇到无法处理的问题请联系主任或管理员。</p>" +
+                "    <p style='font-size:14px; color:#666;'>请及时处理并重新提交审核，避免拖延进程，如果遇到无法处理的问题请联系专业负责人或管理员。</p>" +
                 "    <hr style='margin:30px 0; border:none; border-top:1px solid #ddd;'/>" +
                 "    <p style='font-size:12px; color:#999; text-align:center;'>此邮件由系统自动发送，请不要直接回复。</p>" +
                 "  </div>" +
@@ -162,7 +162,7 @@ public class MailServiceImpl implements MailService {
                 "    <div style='text-align:center; margin:20px 0;'>" +
                 "      <span style='display:inline-block; font-size:28px; font-weight:bold; color:#fff; background:#00785a; padding:10px 20px; border-radius:6px;'>" + escapedText + "</span>" +
                 "    </div>" +
-                "    <p style='font-size:14px; color:#666;'>请确认退选是否自愿操作或导师操作，如果遇到无法处理的问题请联系主任或管理员。</p>" +
+                "    <p style='font-size:14px; color:#666;'>请确认退选是否自愿操作或导师操作，如果遇到无法处理的问题请联系专业负责人或管理员。</p>" +
                 "    <hr style='margin:30px 0; border:none; border-top:1px solid #ddd;'/>" +
                 "    <p style='font-size:12px; color:#999; text-align:center;'>此邮件由系统自动发送，请不要直接回复。</p>" +
                 "  </div>" +

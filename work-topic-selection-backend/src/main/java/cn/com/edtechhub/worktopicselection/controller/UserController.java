@@ -161,6 +161,9 @@ public class UserController {
     @Resource
     private UserMapper userMapper;
 
+    @Resource
+    private TeacherGroupService teacherGroupService;
+
     /**
      * 注入系部服务依赖
      */
@@ -440,7 +443,7 @@ public class UserController {
                             || Objects.equals(newRole, UserRoleEnum.TEACHER.getCode()))
                             && StringUtils.isBlank(oldUser.getDept()),
                     CodeBindMessageEnums.PARAMS_ERROR,
-                    "主任或教师账号必须先配置所属系部"
+                    "专业负责人或教师账号必须先配置所属系部"
             );
             ThrowUtils.throwIf(
                     Objects.equals(newRole, UserRoleEnum.STUDENT.getCode())
@@ -750,7 +753,7 @@ public class UserController {
         ThrowUtils.throwIf(
                 !isAllowedRoleToggle(loginUser.getUserRole(), userRole),
                 CodeBindMessageEnums.NO_AUTH_ERROR,
-                "只允许教师帐号和主任帐号互相切换"
+                "只允许教师帐号和专业负责人帐号互相切换"
         );
 
         // 当前用户必须绑定邮箱
@@ -1564,13 +1567,7 @@ public class UserController {
                     "不能为其他系部发布题目"
             );
 
-            String directorName = StringUtils.trim(request.getDeptTeacher());
-            ThrowUtils.throwIf(StringUtils.isBlank(directorName), CodeBindMessageEnums.PARAMS_ERROR, "请选择本系部主任");
-            User director = userService.getOne(new QueryWrapper<User>()
-                    .eq("userRole", UserRoleEnum.DEPT.getCode())
-                    .eq("dept", teacherDept)
-                    .eq("userName", directorName));
-            ThrowUtils.throwIf(director == null, CodeBindMessageEnums.PARAMS_ERROR, "所选主任不属于当前教师系部");
+            teacherGroupService.validate(loginUser.getUserAccount(), StringUtils.trimToNull(request.getTopicGroup()), null);
 
             Integer topicAmount = loginUser.getTopicAmount();
             ThrowUtils.throwIf(topicAmount == null || topicAmount <= 0, CodeBindMessageEnums.ILLEGAL_OPERATION_ERROR, "剩余出题数量不足, 请不要继续添加题目");
@@ -1584,7 +1581,7 @@ public class UserController {
             topic.setTeacherName(loginUser.getUserName());
             topic.setTeacherAccount(loginUser.getUserAccount());
             topic.setDeptName(teacherDept);
-            topic.setDeptTeacher(director.getUserName());
+            topic.setDeptTeacher("");
             topic.setTopicGroup(StringUtils.trimToNull(request.getTopicGroup()));
             topic.setSurplusQuantity(topicCapacity);
             boolean result = topicService.save(topic);
@@ -1766,6 +1763,9 @@ public class UserController {
                     "打回题目时必须填写理由"
             );
 
+            if (userService.userIsDept(loginUser)) {
+                topic.setDeptTeacher(loginUser.getUserName());
+            }
             topic.setStatus(statusEnum.getCode());
             topic.setReason(rejected ? reason : "");
             boolean result = topicService.updateById(topic);
@@ -2132,6 +2132,7 @@ public class UserController {
         ThrowUtils.throwIf(ownedTopic == null, CodeBindMessageEnums.NOT_FOUND_ERROR, "未找到当前教师名下的题目");
 
         return transactionTemplate.execute(transactionStatus -> {
+            userMapper.selectByIdForUpdate(loginUser.getId());
             Topic topic = topicMapper.selectByIdForUpdate(ownedTopic.getId());
             ThrowUtils.throwIf(topic == null, CodeBindMessageEnums.NOT_FOUND_ERROR, "题目不存在");
             ThrowUtils.throwIf(!isTopicOwner(loginUser, topic), CodeBindMessageEnums.NO_AUTH_ERROR, "只能修改自己的题目");
@@ -2141,6 +2142,7 @@ public class UserController {
                     "已发布的题目不允许修改"
             );
 
+            teacherGroupService.validate(loginUser.getUserAccount(), StringUtils.trimToNull(request.getTopicGroup()), topic.getId());
             topic.setType(type);
             topic.setDescription(description);
             topic.setRequirement(requirement);
@@ -2444,6 +2446,7 @@ public class UserController {
         } else if (UserRoleEnum.DEPT.equals(loginRole)) {
             // 如果是主任只看到本系部的选题
             queryWrapper.eq("deptName", requireDepartment(loginUser));
+            queryWrapper.eq("topicGroup", requireUserGroup(loginUser));
         } else if (UserRoleEnum.TEACHER.equals(loginRole)) {
             // 如果是老师, 只看到自己负责的选题
             queryWrapper.eq("teacherAccount", loginUser.getUserAccount());
@@ -3413,6 +3416,42 @@ public class UserController {
         return TheResult.success(CodeBindMessageEnums.SUCCESS, theSystemInfoVo);
     }
 
+    @SaCheckRole("teacher")
+    @GetMapping("/teacher/groups")
+    public BaseResponse<List<Map<String, Object>>> getTeacherGroups() {
+        return TheResult.success(CodeBindMessageEnums.SUCCESS,
+                teacherGroupService.groups(userService.userGetCurrentLoginUser().getUserAccount()));
+    }
+
+    /**
+     * 批量查询指定教师的选题组额度, 供教师列表展示使用 (管理员可查全部, 系部主任仅限本系部)
+     */
+    @SaCheckRole(value = {"admin", "dept"}, mode = SaMode.OR)
+    @PostMapping("/teacher/groups/batch")
+    public BaseResponse<Map<String, List<Map<String, Object>>>> getTeacherGroupsBatch(@RequestBody TeacherGroupsBatchRequest request) {
+        ThrowUtils.throwIf(request == null || request.getTeacherAccounts() == null,
+                CodeBindMessageEnums.PARAMS_ERROR, "教师账号列表不能为空");
+        List<String> accounts = request.getTeacherAccounts();
+        User loginUser = userService.userGetCurrentLoginUser();
+        if (Boolean.TRUE.equals(userService.userIsDept(loginUser))) {
+            List<User> deptTeachers = userService.list(new QueryWrapper<User>()
+                    .eq("userRole", UserRoleEnum.TEACHER.getCode())
+                    .eq("dept", loginUser.getDept()));
+            Set<String> allowedAccounts = deptTeachers.stream()
+                    .map(User::getUserAccount)
+                    .collect(Collectors.toSet());
+            accounts = accounts.stream().filter(allowedAccounts::contains).collect(Collectors.toList());
+        }
+        return TheResult.success(CodeBindMessageEnums.SUCCESS, teacherGroupService.groupsBatch(accounts));
+    }
+
+    String requireUserGroup(User user) {
+        Project project = projectService.getOne(new QueryWrapper<Project>().eq("projectName", user.getProject()));
+        ThrowUtils.throwIf(project == null || StringUtils.isBlank(project.getGroupName()),
+                CodeBindMessageEnums.NO_AUTH_ERROR, "当前专业未配置选题组");
+        return project.getGroupName();
+    }
+
     boolean isTopicOwner(User teacher, Topic topic) {
         return teacher != null
                 && topic != null
@@ -3429,6 +3468,7 @@ public class UserController {
             return StringUtils.isNotBlank(actor.getDept())
                     && StringUtils.isNotBlank(topic.getDeptName())
                     && Objects.equals(actor.getDept(), topic.getDeptName())
+                    && Objects.equals(requireUserGroup(actor), topic.getTopicGroup())
                     && Objects.equals(topic.getStatus(), TopicStatusEnum.PENDING_REVIEW.getCode())
                     && (targetStatus == TopicStatusEnum.NOT_PUBLISHED || targetStatus == TopicStatusEnum.REJECTED);
         }

@@ -345,7 +345,7 @@ const Welcome: React.FC = () => {
                               color: '#555',
                               fontSize: 14,
                             }}>
-                              3. 点击“提交”按钮后即可发布题目，等待主任审核题目通过
+                              3. 点击“提交”按钮后即可发布题目，等待专业负责人审核题目通过
                             </div>
                           </div>
                           <div>
@@ -406,8 +406,8 @@ const Welcome: React.FC = () => {
                   />
                 </Paragraph>
               </Tabs.TabPane>
-              <Tabs.TabPane tab="主任使用手册" key="3">
-                <Paragraph>主任的操作流程：</Paragraph>
+              <Tabs.TabPane tab="专业负责人使用手册" key="3">
+                <Paragraph>专业负责人的操作流程：</Paragraph>
                 <Paragraph>
                   <Text strong>
                     <ul>
@@ -424,23 +424,23 @@ const Welcome: React.FC = () => {
                   </Text>
                 </Paragraph>
                 <Paragraph>
-                  主任应当 <Text underline>在开启双选之前</Text>，审核本系所提交的所有 <Text
+                  专业负责人应当 <Text underline>在开启双选之前</Text>，审核本系所提交的所有 <Text
                   code>毕业设计题目（后续简称“题目”）</Text>。教师所出的题目如果被打回，后续再次修改后可以重新提交审核。
                 </Paragraph>
                 <Paragraph>
-                  本系统 <Text mark>提供主任切换角色的特殊功能（满足主任也可以出题的条件），但使用有一些条件</Text>。若您发现无法快速切换身份，则需要联系管理员进行处理。
+                  本系统 <Text mark>提供专业负责人切换角色的特殊功能（满足专业负责人也可以出题的条件），但使用有一些条件</Text>。若您发现无法快速切换身份，则需要联系管理员进行处理。
                 </Paragraph>
                 <Paragraph>
                   <ol>
                     <li>
-                      使用主任帐号登录系统，在初始化帐号的时候，修改密码、绑定邮箱
+                      使用专业负责人帐号登录系统，在初始化帐号的时候，修改密码、绑定邮箱
                     </li>
                     <li>
                       使用另外一个管理员提供的教师帐号登录系统，<Text
-                      style={{color: 'red'}}>确保与主任帐号同名、同系，并绑定相同邮箱；两个帐号无需使用相同密码</Text>，否则将无法切换角色
+                      style={{color: 'red'}}>确保与专业负责人帐号同名、同系，并绑定相同邮箱；两个帐号无需使用相同密码</Text>，否则将无法切换角色
                     </li>
                     <li>
-                      然后就可以在对应的主任帐号或教师帐号中来回切换登陆（偶尔因为浏览器缓存的缘故需要刷新浏览器才生效，实在无法解决找管理员）
+                      然后就可以在对应的专业负责人帐号或教师帐号中来回切换登陆（偶尔因为浏览器缓存的缘故需要刷新浏览器才生效，实在无法解决找管理员）
                     </li>
                   </ol>
                 </Paragraph>
@@ -450,7 +450,7 @@ const Welcome: React.FC = () => {
                     defaultActiveKey={['1']}
                     items={[{
                       key: '1',
-                      label: '主任端简易演示过程',
+                      label: '专业负责人端简易演示过程',
                       children: (
                         <Carousel
                           autoplay
@@ -507,7 +507,7 @@ const Welcome: React.FC = () => {
                               color: '#555',
                               fontSize: 14,
                             }}>
-                              4. 左下角（或右上角）可以选择退出登陆，也可以选择切换角色，方便主任可以作为教师出题
+                              4. 左下角（或右上角）可以选择退出登陆，也可以选择切换角色，方便专业负责人可以作为教师出题
                             </div>
                           </div>
                         </Carousel>

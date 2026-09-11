@@ -14,7 +14,7 @@ import {ModalForm, ProFormSelect, ProFormTextArea} from '@ant-design/pro-form';
 import {Button, ConfigProvider, Divider, message, Modal, Tag, Tooltip, Typography} from 'antd';
 import {useRef, useState} from 'react';
 // @ts-ignore
-import { useNavigate } from '@umijs/max';
+import { request, useNavigate } from '@umijs/max';
 import {createStyles} from "antd-style";
 
 type GithubIssueItem = {
@@ -112,7 +112,7 @@ export default () => {
       },
     },
     {
-      title: '系部主任',
+      title: '专业负责人',
       dataIndex: 'deptTeacher',
       valueType: 'select',
       editable: false,
@@ -441,30 +441,17 @@ export default () => {
               required
             />
             <ProFormSelect
-              request={async () => {
-                const res = await getTeacherUsingPost1({userRole: 2});
-                return (
-                  res?.data?.map((item) => ({
-                    label: item.label,
-                    value: item.value,
-                  })) || []
-                );
-              }}
-              width="md"
-              name="deptTeacher"
-              label="系部主任"
-              required
-            />
-            <ProFormSelect
               width="md"
               name="topicGroup"
-              label="适用选题组（可选）"
-              options={[
-                {label: '第一组', value: '第一组'},
-                {label: '第二组', value: '第二组'},
-                {label: '第三组', value: '第三组'},
-              ]}
-              allowClear
+              label="适用选题组"
+              rules={[{required: true, message: '请选择选题组'}]}
+              request={async () => {
+                const res = await request<{code: number; data: {groupName: string; maxTopics: number; remaining: number}[]}>('/user/teacher/groups');
+                return res.data.map((group) => ({
+                  label: `${group.groupName}（剩余 ${group.remaining} / ${group.maxTopics}）`,
+                  value: group.groupName,
+                }));
+              }}
             />
           </ModalForm>
         </>,

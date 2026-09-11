@@ -43,7 +43,7 @@
         access: 'canAccessAdmin',
       },
       {
-        name: '主任账号管理',
+        name: '专业负责人账号管理',
         path: '/admin/deptTeacher',
         component: './DeptTeacherList',
         access: 'canAccessAdmin',

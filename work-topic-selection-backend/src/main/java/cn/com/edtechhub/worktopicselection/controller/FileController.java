@@ -396,7 +396,7 @@ public class FileController {
                 "    `userName` AS 姓名,\n" +
                 "    CASE `userRole`\n" +
                 "        WHEN 3 THEN '管理员'\n" +
-                "        WHEN 2 THEN '主任'\n" +
+                "        WHEN 2 THEN '专业负责人'\n" +
                 "        WHEN 1 THEN '教师'\n" +
                 "        WHEN 0 THEN '学生'\n" +
                 "        END AS 角色,\n" +
@@ -454,7 +454,7 @@ public class FileController {
                 "    `description` AS 描述,\n" +
                 "    `requirement` AS 要求,\n" +
                 "    `deptName` AS 系部,\n" +
-                "    `deptTeacher` AS 系部主任,\n" +
+                "    `deptTeacher` AS 专业负责人,\n" +
                 "    `createTime` AS 创建时间,\n" +
                 "    `updateTime` AS 更新时间,\n" +
                 "    CASE `status`\n" +
@@ -691,7 +691,7 @@ public class FileController {
         }
         ThrowUtils.throwIf(!userService.userIsDept(user), CodeBindMessageEnums.NO_AUTH_ERROR, "当前账号无权导出该数据");
         String dept = user == null ? null : StringUtils.trim(user.getDept());
-        ThrowUtils.throwIf(StringUtils.isBlank(dept), CodeBindMessageEnums.NO_AUTH_ERROR, "当前主任账号未配置所属系部");
+        ThrowUtils.throwIf(StringUtils.isBlank(dept), CodeBindMessageEnums.NO_AUTH_ERROR, "当前专业负责人账号未配置所属系部");
         return dept;
     }
 

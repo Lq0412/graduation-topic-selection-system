@@ -3,6 +3,7 @@ import {uploadFileUsingPost} from '@/services/work-topic-selection/fileControlle
 import {
   addUserUsingPost,
   getDeptListUsingPost,
+  getTeacherGroupsBatchUsingPost,
   listUserByPageUsingPost,
   resetPasswordUsingPost,
 } from '@/services/work-topic-selection/userController';
@@ -14,10 +15,17 @@ import {Button, Dropdown, MenuProps, message, Modal} from 'antd';
 import {useRef, useState} from 'react';
 import {AdjustLimitButton} from "@/components/AdjustLimitButton";
 
+type GroupQuotaItem = {
+  groupName: string;
+  maxTopics: number;
+  remaining: number;
+};
+
 type GithubIssueItem = {
   userAccount: string;
   userName: string;
   dept: string;
+  groupQuota?: GroupQuotaItem[];
 };
 
 export default () => {
@@ -41,6 +49,30 @@ export default () => {
     {
       title: '系部',
       dataIndex: 'dept',
+    },
+    {
+      title: '选题组 / 额度',
+      dataIndex: 'groupQuota',
+      search: false,
+      width: 200,
+      render: (_text, record) => {
+        const list = record.groupQuota || [];
+        if (list.length === 0) {
+          return <span style={{color: '#999'}}>未配置</span>;
+        }
+        return (
+          <div>
+            {list.map((item) => (
+              <div key={item.groupName}>
+                {item.groupName}
+                <span style={{color: '#888780', marginLeft: 6}}>
+                  剩余 {item.remaining} / {item.maxTopics}
+                </span>
+              </div>
+            ))}
+          </div>
+        );
+      },
     },
     {
       title: '操作',
@@ -127,9 +159,24 @@ export default () => {
             pageSize: params.pageSize,
           };
           const response = await listUserByPageUsingPost(requestParams);
+          const records = (response.data?.records || []) as GithubIssueItem[];
+          const accounts = records
+            .map((item) => item.userAccount)
+            .filter((account) => !!account);
+          let quotaMap: Record<string, GroupQuotaItem[]> = {};
+          if (accounts.length > 0) {
+            try {
+              const quotaResponse = await getTeacherGroupsBatchUsingPost({teacherAccounts: accounts});
+              quotaMap = quotaResponse.data || {};
+            } catch (quotaError) {
+              console.error('Error fetching teacher group quota:', quotaError);
+            }
+          }
           return {
-            // @ts-ignore
-            data: response.data.records,
+            data: records.map((item) => ({
+              ...item,
+              groupQuota: quotaMap[item.userAccount] || [],
+            })),
             // @ts-ignore
             total: response.data.total,
             success: true,

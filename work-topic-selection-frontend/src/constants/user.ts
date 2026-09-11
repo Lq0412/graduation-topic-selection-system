@@ -12,7 +12,7 @@ export const USER_ROLE_ENUM = {
 export const USER_ROLE_MAP: { [key in 0 | 1 | 2 | 3]: string }  = {
   0: "学生",
   1: "教师",
-  2: "主任",
+  2: "专业负责人",
   3: "系统",
 }; // 映射
 export const USER_ROLE_OPTIONS = Object.entries(USER_ROLE_MAP).map(([code, label]) => ({

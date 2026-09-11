@@ -322,7 +322,7 @@ const SystemInfoVisualization = () => {
         <div style={{ flex: '1 1 calc(25% - 24px)', minWidth: '150px' }}>
           <StatisticCard
             statistic={{
-              title: '主任人数',
+              title: '专业负责人',
               value: systemInfo.totalDeptCount.toString(),
               valueStyle: { color: '#d18aec' }
             }}

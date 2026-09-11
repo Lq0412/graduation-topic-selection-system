@@ -176,11 +176,19 @@ class UserControllerTopicSelectionTest {
         assertTrue(controller.isTopicOwner(teacher, topic));
         assertFalse(controller.isTopicOwner(otherTeacher, topic));
 
+        dept.setProject("计科");
+        Project project = new Project();
+        project.setGroupName("第一组");
+        when(projectService.getOne(any())).thenReturn(project);
+        topic.setTopicGroup("第一组");
         topic.setStatus(TopicStatusEnum.PENDING_REVIEW.getCode());
         assertTrue(controller.isAllowedTopicStatusTransition(dept, topic, TopicStatusEnum.NOT_PUBLISHED));
         assertTrue(controller.isAllowedTopicStatusTransition(dept, topic, TopicStatusEnum.REJECTED));
         assertFalse(controller.isAllowedTopicStatusTransition(otherDept, topic, TopicStatusEnum.REJECTED));
         assertFalse(controller.isAllowedTopicStatusTransition(teacher, topic, TopicStatusEnum.NOT_PUBLISHED));
+        topic.setTopicGroup("第二组");
+        assertFalse(controller.isAllowedTopicStatusTransition(dept, topic, TopicStatusEnum.NOT_PUBLISHED));
+        topic.setTopicGroup("第一组");
 
         topic.setStatus(TopicStatusEnum.REJECTED.getCode());
         assertTrue(controller.isAllowedTopicStatusTransition(teacher, topic, TopicStatusEnum.PENDING_REVIEW));

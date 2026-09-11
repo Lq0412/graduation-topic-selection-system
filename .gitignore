@@ -43,6 +43,10 @@
 /deploy/*.tar.gz
 
 # Real student/teacher/director lists and historical topic data
+# 2023 级真实名单与导入产物：教师出题额度一览含 178 位真实教师姓名/工号，
+# 生成导入文件.py 含初始口令规律（12345678+工号），均不得进入公开仓库
+/deploy/教师出题额度一览.csv
+/deploy/生成导入文件.py
 /work-topic-selection-backend/src/main/resources/2022届*.csv
 /work-topic-selection-backend/src/main/resources/2022届*.xlsx
 

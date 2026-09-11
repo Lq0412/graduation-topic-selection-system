@@ -124,9 +124,9 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({menu, children
               // 确定要切换到的角色
               let targetRole;
               if (currentUser.userRole === USER_ROLE_ENUM.TEACHER) {
-                targetRole = USER_ROLE_ENUM.DIRECTOR;  // 教师切换到主任
+                targetRole = USER_ROLE_ENUM.DIRECTOR;  // 教师切换到专业负责人
               } else if (currentUser.userRole === USER_ROLE_ENUM.DIRECTOR) {
-                targetRole = USER_ROLE_ENUM.TEACHER;   // 主任切换到教师
+                targetRole = USER_ROLE_ENUM.TEACHER;   // 专业负责人切换到教师
               } else {
                 return;
               }
@@ -217,7 +217,7 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({menu, children
     },
   ];
 
-  // 只有主任和教师角色才显示切换身份按钮
+  // 只有专业负责人和教师角色才显示切换身份按钮
   const showSwitchRole = currentUser.userRole === USER_ROLE_ENUM.DIRECTOR || currentUser.userRole === USER_ROLE_ENUM.TEACHER;
 
   const menuItems = [
@@ -244,7 +244,7 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({menu, children
       {
         key: 'switch-role',
         icon: <SwapOutlined />,
-        label: `切换${currentUser.userRole === USER_ROLE_ENUM.TEACHER ? '主任' : '教师'}`,
+        label: `切换${currentUser.userRole === USER_ROLE_ENUM.TEACHER ? '专业负责人' : '教师'}`,
       },
       {
         type: 'divider' as const,

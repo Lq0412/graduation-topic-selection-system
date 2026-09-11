@@ -2,6 +2,7 @@ import {
   addUserUsingPost,
   deleteUserUsingPost,
   getDeptListUsingPost,
+  getProjectListUsingPost,
   listUserByPageUsingPost,
   resetPasswordUsingPost,
 } from '@/services/work-topic-selection/userController';
@@ -15,6 +16,7 @@ type GithubIssueItem = {
   userAccount: string;
   userName: string;
   dept: string;
+  project: string;
 };
 
 export default () => {
@@ -38,6 +40,11 @@ export default () => {
     {
       title: '系部',
       dataIndex: 'dept',
+    },
+    {
+      title: '专业',
+      dataIndex: 'project',
+      render: (_, record) => record.project || '未配置',
     },
     {
       title: '操作',
@@ -115,7 +122,7 @@ export default () => {
         showSizeChanger: true,
       }}
       dateFormatter="string"
-      headerTitle="主任账号管理"
+      headerTitle="专业负责人管理"
       toolBarRender={() => [
         <div
           key="toolbar-container"
@@ -127,13 +134,14 @@ export default () => {
         >
           <ModalForm<{
             deptName: string;
+            project: string;
             userAccount: string;
             userName: string;
           }>
-            title="添加主任账号"
+            title="添加专业负责人账号"
             trigger={
               <Button type="primary">
-                <PlusOutlined/> 添加主任账号
+                <PlusOutlined/> 添加专业负责人账号
               </Button>
             }
             autoFocusFirstInput
@@ -172,6 +180,31 @@ export default () => {
               name="deptName"
               label="系部"
               required
+            />
+            <ProFormSelect
+              width="md"
+              name="project"
+              label="专业"
+              required
+              dependencies={['deptName']}
+              request={async (params) => {
+                const deptName = params?.deptName;
+                if (!deptName) {
+                  return [];
+                }
+                const response = await getProjectListUsingPost({
+                  deptName,
+                  current: 1,
+                  pageSize: 100,
+                });
+                if (response && response.data) {
+                  return response.data.map((item) => ({
+                    label: item.label,
+                    value: item.value,
+                  }));
+                }
+                return [];
+              }}
             />
           </ModalForm>
           <ModalForm<{
